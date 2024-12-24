@@ -1,31 +1,34 @@
-import pygame
 
-pygame.init()
+class Simulation:
+    def __init__(self, circumferences: List[float], max_velocities: List[float], initial_angles: List[float], 
+                 src_index: int, dest_index: int, src_angle: float, dest_angle: float,
+                 rendezvous: dict):
+        self.circumferences = circumferences
+        self.max_velocities = max_velocities
+        self.initial_angles = initial_angles 
+        self.src_index = src_index
+        self.dest_index = dest_index
+        self.src_angle = src_angle
+        self.dest_angle = dest_angle
+        self.rendezvous = rendezvous # key: (i, j), value: [angle, angle] 
+        
+        self.robot_num = len(circumferences)
+        # robots : [current_velocity, current_angle]
+        self.robots = [[0, initial_angles[i]] for i in self.robot_num] 
+        
+    def reset:
+        for i in range(self.robot_num):
+            self.robots[i][0] = 0 # current_velocity
+            self.robots[i][1] = self.initial_angles[i] # current_angle
 
-SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
+    def step:
+        # calculate the diameter and change the angle of the robot
 
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    def transition:
+        pass
 
-player = pygame.Rect((300, 250, 50, 50))
+    def get_staleness:
+        # largest shift from src to dest
+        pass
 
-run = True
-while run:
-    pygame.draw.rect(screen, (255, 0, 0), player)
 
-    key = pygame.key.get_pressed()
-    if key[pygame.K_a] == True:
-        player.move_ip(-1, 0)
-    elif key[pygame.K_d] == True:
-        player.move_ip(1, 0)
-    elif key[pygame.K_w] == True:
-        player.move_ip(0, -1)
-    elif key[pygame.K_s] == True:
-        player.move_ip(0, 1)
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
-
-    pygame.display.update()
-
-pygame.quit()
