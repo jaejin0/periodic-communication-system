@@ -1,41 +1,61 @@
 import pygame
 import math
 
-def move_circle():
-    speed = 1 # degree / timestep
-    
+def change_angular_velocity():
     current_angle = math.atan2(player.y - center[1], player.x - center[0])
-    print(current_angle)
+    return current_angle
 
+# initialization
 pygame.init()
+
+# display set up
 SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption("Periodic Communication System")
 
-player = pygame.Rect((300, 250, 50, 50))
-center = pygame.Rect((300, 200, 10, 10))
+# colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
 
+# robot properties
+center_x = 300
+center_y = 250
+radius = 60
+angle = 0
+angular_speed = 0.05
+
+# game loop
 running = True
-while running:
-    screen.fill("white")
-    pygame.draw.circle(screen, (255, 0, 0), (player.x, player.y), 10)
-    pygame.draw.circle(screen, (0, 0, 255), (center.x, center.y), 4)
-    move_circle()
+clock = pygame.time.Clock()
 
-    key = pygame.key.get_pressed()
-    if key[pygame.K_a] == True:
-        player.move_ip(-1, 0)
-    elif key[pygame.K_d] == True:
-        player.move_ip(1, 0)
-    elif key[pygame.K_w] == True:
-        player.move_ip(0, -1)
-    elif key[pygame.K_s] == True:
-        player.move_ip(0, 1)
-
+while running: 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            run = False
+            running = False
+
+    # clear screen
+    screen.fill("white")
+
+    # render circumference
+    pygame.draw.circle(screen, BLUE, (center_x, center_y), radius, 2)
+   
+    # render robot
+    x = center_x + radius * math.cos(angle)
+    y = center_y + radius * math.sin(angle)
+    pygame.draw.circle(screen, RED, (x, y), 5)
+   
+    # action choice
+
+
+    # transition
+    angle += angular_speed
 
     pygame.display.update()
+
+    clock.tick(60)
 
 pygame.quit()
 
