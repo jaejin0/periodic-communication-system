@@ -48,7 +48,11 @@ while running:
     pygame.draw.circle(screen, RED, (x, y), 5)
    
     # action choice
-
+    key = pygame.key.get_pressed()
+    if key[pygame.K_a] == True:
+        angular_speed += 0.01
+    elif key[pygame.K_d] == True:
+        angular_speed -= 0.01
 
     # transition
     angle += angular_speed
