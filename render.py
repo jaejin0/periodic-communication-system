@@ -1,16 +1,15 @@
 import pygame
 
 pygame.init()
-
 SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
-
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 player = pygame.Rect((300, 250, 50, 50))
 
-run = True
-while run:
-    pygame.draw.rect(screen, (255, 0, 0), player)
+running = True
+while running:
+    screen.fill("white")
+    pygame.draw.circle(screen, (255, 0, 0), (player.x, player.y), 30)
 
     key = pygame.key.get_pressed()
     if key[pygame.K_a] == True:
