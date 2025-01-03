@@ -23,8 +23,8 @@ robots = [{} for i in range(robot_num)]
 robots[0]["center_x"] = 300
 robots[0]["center_y"] = 250
 robots[0]["radius"] = 50
-robots[0]["angle"] = 0
-robots[0]["angular_speed"] = 0.05
+robots[0]["angle"] = 3.1
+robots[0]["angular_speed"] = 0.03
     # robot 1
 robots[1]["center_x"] = 400
 robots[1]["center_y"] = 250
@@ -44,23 +44,26 @@ while running:
     # clear screen
     screen.fill("white")
 
-    # render circumference
-    pygame.draw.circle(screen, BLUE, (center_x, center_y), radius, 2)
-   
-    # render robot
-    x = center_x + radius * math.cos(angle)
-    y = center_y + radius * math.sin(angle)
-    pygame.draw.circle(screen, RED, (x, y), 5)
-   
-    # action choice
+    # render objects 
+    for i in range(robot_num):
+        # render circumference
+        pygame.draw.circle(screen, BLUE, (robots[i]["center_x"], robots[i]["center_y"]), robots[i]["radius"], 2) 
+        
+        # render robot
+        x = robots[i]["center_x"] + robots[i]["radius"] * math.cos(robots[i]["angle"])
+        y = robots[i]["center_y"] + robots[i]["radius"] * math.sin(robots[i]["angle"])
+        pygame.draw.circle(screen, RED, (x, y), 5)
+    
+   # action choice
     key = pygame.key.get_pressed()
     if key[pygame.K_a] == True:
-        angular_speed += 0.01
+        robots[0]["angular_speed"] += 0.01
     elif key[pygame.K_d] == True:
-        angular_speed -= 0.01
+        robots[0]["angular_speed"] -= 0.01
 
     # transition
-    angle += angular_speed
+    for i in range(robot_num):
+        robots[i]["angle"] += robots[i]["angular_speed"]
 
     pygame.display.update()
 
