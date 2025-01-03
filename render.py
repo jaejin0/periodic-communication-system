@@ -1,10 +1,6 @@
 import pygame
 import math
 
-def change_angular_velocity():
-    current_angle = math.atan2(player.y - center[1], player.x - center[0])
-    return current_angle
-
 # initialization
 pygame.init()
 
@@ -21,11 +17,20 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
 # robot properties
-center_x = 300
-center_y = 250
-radius = 60
-angle = 0
-angular_speed = 0.05
+robot_num = 2
+robots = [{} for i in range(robot_num)]
+    # robot 0
+robots[0]["center_x"] = 300
+robots[0]["center_y"] = 250
+robots[0]["radius"] = 50
+robots[0]["angle"] = 0
+robots[0]["angular_speed"] = 0.05
+    # robot 1
+robots[1]["center_x"] = 400
+robots[1]["center_y"] = 250
+robots[1]["radius"] = 50
+robots[1]["angle"] = 0
+robots[1]["angular_speed"] = 0.05
 
 # game loop
 running = True
