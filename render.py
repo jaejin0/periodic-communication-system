@@ -38,8 +38,8 @@ robots[1]["angular_velocity"] = 0.05
 
 # rendezvous | key: (sender index, angle), value: (receiver index) 
 rendezvous = {
-              (0, 0): (1, math.pi),
-              (1, math.pi): (0, 0)
+              (0, 0): [1, float("{:.4f}".format(math.pi))],
+              (1, float("{:.4f}".format(math.pi))): [0, 0]
              } 
 
 # packet properties
@@ -83,11 +83,11 @@ while running:
         pygame.draw.circle(screen, RED, (x, y), robot_radius)
 
         # check if they met
-        for i in range(robot_num):
-            if (i, robots[i]["angle"]) in rendezvous:
-                print("HEHEHE")
-                pygame.draw.circle(screen, GREEN, (x, y), robot_sensor_range, 2)
-            
+        if (i, robots[i]["angle"]) in rendezvous:
+            pygame.draw.circle(screen, RED, (x, y), 20) # robot_sensor_range, 2)
+
+    print(robots[0]["angle"])
+
     # action choice
     key = pygame.key.get_pressed()
     if key[pygame.K_a] == True and robots[0]["angular_velocity"] <= robot_max_velocity - 0.01:
