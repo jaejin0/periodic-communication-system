@@ -19,6 +19,7 @@ BLUE = (0, 0, 255)
 # robot properties
 robot_radius = 5
 robot_sensor_range = 10
+robot_max_velocity = 0.1
 
 robot_num = 2
 robots = [{} for i in range(robot_num)]
@@ -81,17 +82,18 @@ while running:
         for i, (_x, _y) in enumerate(current_positions):
             if math.sqrt((x - _x)**2 + (y - _y) **2) <= robot_sensor_range:
                 pygame.draw.circle(screen, GREEN, (x, y), robot_sensor_range, 2)
-        
+                        
         current_positions.append([x, y])
 
 
 
    # action choice
     key = pygame.key.get_pressed()
-    if key[pygame.K_a] == True:
+    if key[pygame.K_a] == True and robots[0]["angular_speed"] <= robot_max_velocity - 0.01:
         robots[0]["angular_speed"] += 0.01
-    elif key[pygame.K_d] == True:
+    elif key[pygame.K_d] == True and robots[0]["angular_speed"] >= -robot_max_velocity + 0.01:
         robots[0]["angular_speed"] -= 0.01
+        
 
     # transition
     for i in range(robot_num):
