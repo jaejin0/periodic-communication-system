@@ -28,13 +28,13 @@ robots[0]["center_x"] = 300
 robots[0]["center_y"] = 250
 robots[0]["radius"] = 50
 robots[0]["angle"] = 0
-robots[0]["angular_speed"] = 0.00
+robots[0]["angular_velocity"] = 0.00
     # robot 1
 robots[1]["center_x"] = 400
 robots[1]["center_y"] = 250
 robots[1]["radius"] = 50
 robots[1]["angle"] = 0
-robots[1]["angular_speed"] = 0.05
+robots[1]["angular_velocity"] = 0.05
 
 # packet properties
 src_id = 0
@@ -89,15 +89,15 @@ while running:
 
    # action choice
     key = pygame.key.get_pressed()
-    if key[pygame.K_a] == True and robots[0]["angular_speed"] <= robot_max_velocity - 0.01:
-        robots[0]["angular_speed"] += 0.01
-    elif key[pygame.K_d] == True and robots[0]["angular_speed"] >= -robot_max_velocity + 0.01:
-        robots[0]["angular_speed"] -= 0.01
+    if key[pygame.K_a] == True and robots[0]["angular_velocity"] <= robot_max_velocity - 0.01:
+        robots[0]["angular_velocity"] += 0.01
+    elif key[pygame.K_d] == True and robots[0]["angular_velocity"] >= -robot_max_velocity + 0.01:
+        robots[0]["angular_velocity"] -= 0.01
         
 
     # transition
     for i in range(robot_num):
-        robots[i]["angle"] += robots[i]["angular_speed"]
+        robots[i]["angle"] += robots[i]["angular_velocity"]
 
     pygame.display.update()
 
