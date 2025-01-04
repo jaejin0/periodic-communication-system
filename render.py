@@ -27,14 +27,20 @@ robots = [{} for i in range(robot_num)]
 robots[0]["center_x"] = 300
 robots[0]["center_y"] = 250
 robots[0]["radius"] = 50
-robots[0]["angle"] = 0
-robots[0]["angular_velocity"] = 0.00
+robots[0]["angle"] = 1.0
+robots[0]["angular_velocity"] = 0.01
     # robot 1
 robots[1]["center_x"] = 400
 robots[1]["center_y"] = 250
 robots[1]["radius"] = 50
 robots[1]["angle"] = 0
 robots[1]["angular_velocity"] = 0.05
+
+# rendezvous | key: (sender index, angle), value: (receiver index) 
+rendezvous = {
+              (0, 0): (1, math.pi),
+              (1, math.pi): (0, 0)
+             } 
 
 # packet properties
 src_id = 0
@@ -58,7 +64,6 @@ while running:
     screen.fill("white")
 
     # render objects
-    current_positions = []
     for i in range(robot_num):
         # render circumference
         pygame.draw.circle(screen, BLUE, (robots[i]["center_x"], robots[i]["center_y"]), robots[i]["radius"], 2) 
@@ -72,22 +77,18 @@ while running:
         pygame.draw.rect(screen, GREEN, pygame.Rect(src_x - src_size / 2, src_y - src_size / 2, src_size, src_size))
         pygame.draw.rect(screen, BLUE, pygame.Rect(dest_x - dest_size / 2, dest_y - dest_size / 2, dest_size, dest_size))
 
-
         # render robot
         x = robots[i]["center_x"] + robots[i]["radius"] * math.cos(robots[i]["angle"])
         y = robots[i]["center_y"] + robots[i]["radius"] * math.sin(robots[i]["angle"])
         pygame.draw.circle(screen, RED, (x, y), robot_radius)
 
         # check if they met
-        for i, (_x, _y) in enumerate(current_positions):
-            if math.sqrt((x - _x)**2 + (y - _y) **2) <= robot_sensor_range:
+        for i in range(robot_num):
+            if (i, robots[i]["angle"]) in rendezvous:
+                print("HEHEHE")
                 pygame.draw.circle(screen, GREEN, (x, y), robot_sensor_range, 2)
-                        
-        current_positions.append([x, y])
-
-
-
-   # action choice
+            
+    # action choice
     key = pygame.key.get_pressed()
     if key[pygame.K_a] == True and robots[0]["angular_velocity"] <= robot_max_velocity - 0.01:
         robots[0]["angular_velocity"] += 0.01
@@ -98,6 +99,9 @@ while running:
     # transition
     for i in range(robot_num):
         robots[i]["angle"] += robots[i]["angular_velocity"]
+        robots[i]["angle"] = float("{:.4f}".format(robots[i]["angle"]))
+        if robots[i]["angle"] >= math.pi or robots[i]["angle"] <= -math.pi:
+            robots[i]["angle"] = -robots[i]["angle"]
 
     pygame.display.update()
 
