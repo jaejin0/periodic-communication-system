@@ -1,6 +1,11 @@
 import pygame
 import math
 
+def get_robot_position(index):
+    x = robots[index]["center_x"] + robots[index]["radius"] * math.cos(robots[index]["angle"])
+    y = robots[index]["center_y"] + robots[index]["radius"] * math.sin(robots[index]["angle"])
+    return x, y 
+
 # initialization
 pygame.init()
 
@@ -18,7 +23,6 @@ BLUE = (0, 0, 255)
 
 # robot properties
 robot_radius = 5
-robot_sensor_range = 10
 robot_max_velocity = 0.1
 
 robot_num = 2
@@ -37,11 +41,6 @@ robots[1]["radius"] = 50
 robots[1]["angle"] = 0
 robots[1]["angular_velocity"] = 0.05
 robots[1]["rendezvous"] = [[float("{:.4f}".format(math.pi)), 0]]
-# rendezvous | key: (sender index, angle), value: (receiver index) 
-# rendezvous = {
-#              (0, 0): [1, ],
-#              (1, float("{:.4f}".format(math.pi))): [0, 0]
-#             } 
 
 # packet properties
 src_id = 0
@@ -79,14 +78,11 @@ while running:
         pygame.draw.rect(screen, BLUE, pygame.Rect(dest_x - dest_size / 2, dest_y - dest_size / 2, dest_size, dest_size))
 
         # render robot
-        x = robots[i]["center_x"] + robots[i]["radius"] * math.cos(robots[i]["angle"])
-        y = robots[i]["center_y"] + robots[i]["radius"] * math.sin(robots[i]["angle"])
+        x, y = get_robot_position(i)
         pygame.draw.circle(screen, RED, (x, y), robot_radius)
 
         # check if they met
         # if (i, robots[i]["angle"]) in rendezvous:
-        #    pygame.draw.circle(screen, RED, (x, y), 20) # robot_sensor_range, 2)
-
     # action choice
     key = pygame.key.get_pressed()
     if key[pygame.K_a] == True and robots[0]["angular_velocity"] <= robot_max_velocity - 0.01:
@@ -101,7 +97,8 @@ while running:
         robots[i]["angle"] = float("{:.4f}".format(robots[i]["angle"]))
         for angle, j in robots[i]["rendezvous"]:
             if robots[i]["angle"] >= angle and angle >= current_angle:
-                # met
+                x, y = get_robot_position(i)
+                pygame.draw.circle(screen, GREEN, (x, y), 30)
         if robots[i]["angle"] >= math.pi or robots[i]["angle"] <= -math.pi:
             robots[i]["angle"] = -robots[i]["angle"]
         
