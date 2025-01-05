@@ -29,18 +29,19 @@ robots[0]["center_y"] = 250
 robots[0]["radius"] = 50
 robots[0]["angle"] = 1.0
 robots[0]["angular_velocity"] = 0.01
+robots[0]["rendezvous"] = [[0, 1]] # List[angle, id]
     # robot 1
 robots[1]["center_x"] = 400
 robots[1]["center_y"] = 250
 robots[1]["radius"] = 50
 robots[1]["angle"] = 0
 robots[1]["angular_velocity"] = 0.05
-
+robots[1]["rendezvous"] = [[float("{:.4f}".format(math.pi)), 0]]
 # rendezvous | key: (sender index, angle), value: (receiver index) 
-rendezvous = {
-              (0, 0): [1, float("{:.4f}".format(math.pi))],
-              (1, float("{:.4f}".format(math.pi))): [0, 0]
-             } 
+# rendezvous = {
+#              (0, 0): [1, ],
+#              (1, float("{:.4f}".format(math.pi))): [0, 0]
+#             } 
 
 # packet properties
 src_id = 0
@@ -83,10 +84,8 @@ while running:
         pygame.draw.circle(screen, RED, (x, y), robot_radius)
 
         # check if they met
-        if (i, robots[i]["angle"]) in rendezvous:
-            pygame.draw.circle(screen, RED, (x, y), 20) # robot_sensor_range, 2)
-
-    print(robots[0]["angle"])
+        # if (i, robots[i]["angle"]) in rendezvous:
+        #    pygame.draw.circle(screen, RED, (x, y), 20) # robot_sensor_range, 2)
 
     # action choice
     key = pygame.key.get_pressed()
@@ -95,16 +94,20 @@ while running:
     elif key[pygame.K_d] == True and robots[0]["angular_velocity"] >= -robot_max_velocity + 0.01:
         robots[0]["angular_velocity"] -= 0.01
         
-
     # transition
     for i in range(robot_num):
+        current_angle = robots[i]["angle"]
         robots[i]["angle"] += robots[i]["angular_velocity"]
         robots[i]["angle"] = float("{:.4f}".format(robots[i]["angle"]))
+        for angle, j in robots[i]["rendezvous"]:
+            if robots[i]["angle"] >= angle and angle >= current_angle:
+                # met
         if robots[i]["angle"] >= math.pi or robots[i]["angle"] <= -math.pi:
             robots[i]["angle"] = -robots[i]["angle"]
+        
+
 
     pygame.display.update()
-
     clock.tick(60)
 
 pygame.quit()
