@@ -21,9 +21,27 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
-# robot properties
-robot_radius = 5
-robot_max_velocity = 0.1
+class robot:
+    def __init__(
+            self,
+            center_x,
+            center_y,
+            radius,
+            angle,
+            angular_velocity,
+            rendezvous,
+            ):
+        self.center_x = center_x
+        self.center_y = center_y
+        self.radius = radius
+        self.angle = angle
+        self.angular_velocity = angular_velocity
+        self.rendezvous = rendezvous
+        self.previous_angle = None
+
+        # robot properties
+        robot_radius = 5
+        robot_max_velocity = 0.1
 
 robot_num = 2
 robots = [{} for i in range(robot_num)]
@@ -95,10 +113,12 @@ while running:
         current_angle = robots[i]["angle"]
         robots[i]["angle"] += robots[i]["angular_velocity"]
         robots[i]["angle"] = float("{:.4f}".format(robots[i]["angle"]))
+        # check if the robots met
         for angle, j in robots[i]["rendezvous"]:
             if robots[i]["angle"] >= angle and angle >= current_angle:
                 x, y = get_robot_position(i)
-                pygame.draw.circle(screen, GREEN, (x, y), 30)
+                pygame.draw.circle(screen, GREEN, (x, y), 20)
+                 
         if robots[i]["angle"] >= math.pi or robots[i]["angle"] <= -math.pi:
             robots[i]["angle"] = -robots[i]["angle"]
         
