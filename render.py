@@ -60,7 +60,7 @@ robots.append(Robot(
     radius = 50,
     angle = 1.0,
     angular_velocity = 0.1,
-    rendezvous = [[float("{:.4f}".format(math.pi)), 0]]))
+    rendezvous = [[float("{:.3f}".format(math.pi)), 0]]))
 
 # packet properties
 src_id = 0
@@ -114,7 +114,7 @@ while running:
     for i in range(robot_num):
         robots[i].previous_angle = robots[i].angle
         robots[i].angle += robots[i].angular_velocity
-        robots[i].angle = float("{:.4f}".format(robots[i].angle))
+        robots[i].angle = float("{:.3f}".format(robots[i].angle))
         # check if the robots met
     for i in range(robot_num):
         for angle, j in robots[i].rendezvous:
