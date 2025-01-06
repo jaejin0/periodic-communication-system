@@ -41,7 +41,7 @@ class Robot:
 
 # robot properties
 robot_radius = 5
-robot_max_velocity = 0.1
+robot_max_velocity = 0.2
 
 robot_num = 2
 robots = []
@@ -51,7 +51,7 @@ robots.append(Robot(
     center_y = 250,
     radius = 50,
     angle = 1.0,
-    angular_velocity = 0.01,
+    angular_velocity = 0.1,
     rendezvous = [[0, 1]]))
 # robot 1
 robots.append(Robot(
@@ -59,7 +59,7 @@ robots.append(Robot(
     center_y = 250,
     radius = 50,
     angle = 1.0,
-    angular_velocity = 0.05,
+    angular_velocity = 0.1,
     rendezvous = [[float("{:.4f}".format(math.pi)), 0]]))
 
 # packet properties
@@ -112,15 +112,20 @@ while running:
         
     # transition
     for i in range(robot_num):
-        current_angle = robots[i].angle
+        robots[i].previous_angle = robots[i].angle
         robots[i].angle += robots[i].angular_velocity
         robots[i].angle = float("{:.4f}".format(robots[i].angle))
         # check if the robots met
+    for i in range(robot_num):
         for angle, j in robots[i].rendezvous:
-            if robots[i].angle >= angle and angle >= current_angle:
-                x, y = get_robot_position(i)
-                pygame.draw.circle(screen, GREEN, (x, y), 20)
-                 
+            if robots[i].angle >= angle and angle >= robots[i].previous_angle:
+                for j_angle, k in robots[j].rendezvous:
+                    if robots[j].angle >= j_angle and j_angle >= robots[j].previous_angle:
+                        if i == k:
+                            print("met")
+                            x, y = get_robot_position(i)
+                            pygame.draw.circle(screen, GREEN, (x, y), 20)
+    for i in range(robot_num): 
         if robots[i].angle >= math.pi or robots[i].angle <= -math.pi:
             robots[i].angle = -robots[i].angle
         
