@@ -125,6 +125,15 @@ while running:
                             print("met")
                             x, y = get_robot_position(i)
                             pygame.draw.circle(screen, GREEN, (x, y), 20)
+
+    current_positions = []
+    for i in range(robot_num):
+        x, y = get_robot_position(i)
+        for _x, _y in current_positions:
+            if math.sqrt((x - _x)**2 + (y - _y) **2) <= robot_radius:
+                pygame.draw.circle(screen, GREEN, (x, y), robot_radius * 3)
+        current_positions.append([x, y]) 
+    
     for i in range(robot_num): 
         if robots[i].angle >= math.pi or robots[i].angle <= -math.pi:
             robots[i].angle = -robots[i].angle
