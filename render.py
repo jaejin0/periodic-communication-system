@@ -115,17 +115,8 @@ while running:
         robots[i].previous_angle = robots[i].angle
         robots[i].angle += robots[i].angular_velocity
         robots[i].angle = float("{:.3f}".format(robots[i].angle))
-        # check if the robots met
-    for i in range(robot_num):
-        for angle, j in robots[i].rendezvous:
-            if robots[i].angle >= angle and angle >= robots[i].previous_angle:
-                for j_angle, k in robots[j].rendezvous:
-                    if robots[j].angle >= j_angle and j_angle >= robots[j].previous_angle:
-                        if i == k:
-                            print("met")
-                            x, y = get_robot_position(i)
-                            pygame.draw.circle(screen, GREEN, (x, y), 20)
-
+    
+    # check if the robots met
     current_positions = []
     for i in range(robot_num):
         x, y = get_robot_position(i)
