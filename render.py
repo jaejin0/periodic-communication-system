@@ -75,6 +75,20 @@ dest_size = 10
 running = True
 clock = pygame.time.Clock()
 
+def render_circumference(i):
+    pygame.draw.circle(screen, BLUE, (robots[i].center_x, robots[i].center_y), robots[i].radius, 2) 
+
+def render_src():
+    src_x = robots[src_id].center_x + robots[src_id].radius * math.cos(src_angle)
+    src_y = robots[src_id].center_y + robots[src_id].radius * math.sin(src_angle)
+    pygame.draw.rect(screen, GREEN, pygame.Rect(src_x - src_size / 2, src_y - src_size / 2, src_size, src_size))
+
+def render_dest():
+    dest_x = robots[dest_id].center_x + robots[dest_id].radius * math.cos(dest_angle)
+    dest_y = robots[dest_id].center_y + robots[dest_id].radius * math.sin(dest_angle)
+    pygame.draw.rect(screen, BLUE, pygame.Rect(dest_x - dest_size / 2, dest_y - dest_size / 2, dest_size, dest_size))
+
+
 while running: 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -85,17 +99,9 @@ while running:
 
     # render objects
     for i in range(robot_num):
-        # render circumference
-        pygame.draw.circle(screen, BLUE, (robots[i].center_x, robots[i].center_y), robots[i].radius, 2) 
-
-        # render src and dest
-        src_x = robots[src_id].center_x + robots[src_id].radius * math.cos(src_angle)
-        src_y = robots[src_id].center_y + robots[src_id].radius * math.sin(src_angle)
-        dest_x = robots[dest_id].center_x + robots[dest_id].radius * math.cos(dest_angle)
-        dest_y = robots[dest_id].center_y + robots[dest_id].radius * math.sin(dest_angle)
-               
-        pygame.draw.rect(screen, GREEN, pygame.Rect(src_x - src_size / 2, src_y - src_size / 2, src_size, src_size))
-        pygame.draw.rect(screen, BLUE, pygame.Rect(dest_x - dest_size / 2, dest_y - dest_size / 2, dest_size, dest_size))
+        render_circumference(i)
+        render_src()
+        render_dest()
 
         # render robot
         x, y = get_robot_position(i)
