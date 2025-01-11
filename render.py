@@ -88,6 +88,17 @@ def render_dest():
     dest_y = robots[dest_id].center_y + robots[dest_id].radius * math.sin(dest_angle)
     pygame.draw.rect(screen, BLUE, pygame.Rect(dest_x - dest_size / 2, dest_y - dest_size / 2, dest_size, dest_size))
 
+def render_robot(i):
+    x, y = get_robot_position(i)
+    pygame.draw.circle(screen, RED, (x, y), robot_radius)
+
+def render():
+    for i in range(robot_num):
+        render_circumference(i)
+        render_src()
+        render_dest()
+        render_robot(i)
+
 
 while running: 
     for event in pygame.event.get():
@@ -102,10 +113,7 @@ while running:
         render_circumference(i)
         render_src()
         render_dest()
-
-        # render robot
-        x, y = get_robot_position(i)
-        pygame.draw.circle(screen, RED, (x, y), robot_radius)
+        render_robot(i)
 
         # check if they met
         # if (i, robots[i]["angle"]) in rendezvous:
