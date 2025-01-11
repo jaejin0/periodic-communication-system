@@ -1,11 +1,6 @@
 import pygame
 import math
 
-def get_robot_position(index):
-    x = robots[index].center_x + robots[index].radius * math.cos(robots[index].angle)
-    y = robots[index].center_y + robots[index].radius * math.sin(robots[index].angle)
-    return x, y 
-
 # initialization
 pygame.init()
 
@@ -38,6 +33,12 @@ class Robot:
         self.angular_velocity = angular_velocity
         self.rendezvous = rendezvous
         self.previous_angle = None
+    
+    def get_robot_position():
+        x = self.center_x + self.radius * math.cos(self.angle)
+        y = eslf.center_y + self.radius * math.sin(self.angle)
+        return x, y 
+
 
 # robot properties
 robot_radius = 5
@@ -89,7 +90,7 @@ def render_dest():
     pygame.draw.rect(screen, BLUE, pygame.Rect(dest_x - dest_size / 2, dest_y - dest_size / 2, dest_size, dest_size))
 
 def render_robot(i):
-    x, y = get_robot_position(i)
+    x, y = robots[i].get_robot_position()
     pygame.draw.circle(screen, RED, (x, y), robot_radius)
 
 def render():
@@ -133,7 +134,7 @@ while running:
     # check if the robots met
     current_positions = []
     for i in range(robot_num):
-        x, y = get_robot_position(i)
+        x, y = robots[i].get_robot_position()
         for _x, _y in current_positions:
             if math.sqrt((x - _x)**2 + (y - _y) **2) <= robot_radius:
                 pygame.draw.circle(screen, GREEN, (x, y), robot_radius * 3)
