@@ -39,7 +39,11 @@ class Robot:
         y = eslf.center_y + self.radius * math.sin(self.angle)
         return x, y 
 
-
+    def transition():
+        self.previous_angle = robots[i].angle
+        self.angle += robots[i].angular_velocity
+        self.angle = float("{:.3f}".format(robots[i].angle))
+ 
 # robot properties
 robot_radius = 5
 robot_max_velocity = 0.2
@@ -100,6 +104,22 @@ def render():
         render_dest()
         render_robot(i)
 
+def robot_met():
+    # check if the robots met
+    current_positions = []
+    for i in range(robot_num):
+        x, y = robots[i].get_robot_position()
+        for _x, _y in current_positions:
+            if math.sqrt((x - _x)**2 + (y - _y) **2) <= robot_radius:
+                pygame.draw.circle(screen, GREEN, (x, y), robot_radius * 3)
+        current_positions.append([x, y]) 
+    
+    for i in range(robot_num): 
+        if robots[i].angle >= math.pi or robots[i].angle <= -math.pi:
+            robots[i].angle = -robots[i].angle
+        
+
+
 
 while running: 
     for event in pygame.event.get():
@@ -127,24 +147,9 @@ while running:
         
     # transition
     for i in range(robot_num):
-        robots[i].previous_angle = robots[i].angle
-        robots[i].angle += robots[i].angular_velocity
-        robots[i].angle = float("{:.3f}".format(robots[i].angle))
-    
-    # check if the robots met
-    current_positions = []
-    for i in range(robot_num):
-        x, y = robots[i].get_robot_position()
-        for _x, _y in current_positions:
-            if math.sqrt((x - _x)**2 + (y - _y) **2) <= robot_radius:
-                pygame.draw.circle(screen, GREEN, (x, y), robot_radius * 3)
-        current_positions.append([x, y]) 
-    
-    for i in range(robot_num): 
-        if robots[i].angle >= math.pi or robots[i].angle <= -math.pi:
-            robots[i].angle = -robots[i].angle
-        
+        robots[i].transition()
 
+    robot_met()
 
     pygame.display.update()
     clock.tick(60)
