@@ -1,7 +1,8 @@
 import pygame
 import math
 
-from objects import Robot
+from objects import Robot, Source, Destination
+from render import render
 
 # initialization
 pygame.init()
