@@ -35,4 +35,24 @@ class Robot:
         self.angle += robots[i].angular_velocity
         self.angle = float("{:.3f}".format(robots[i].angle))
 
+class Source:
+    def __init__(self, robot_id, src_angle):
+        self.robot_id
+        self.src_angle
+
+class Destination:
+    def __init__(self, robot_id, dest_angle):
+        self.robot_id
+        self.dest_angle
+
+
+# packet properties
+src_id = 0
+dest_id = 1
+src_angle = 3.14
+dest_angle = 0
+
+src_size = 10
+dest_size = 10
+
 

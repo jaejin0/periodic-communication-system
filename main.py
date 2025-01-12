@@ -1,6 +1,8 @@
 import pygame
 import math
 
+from objects import Robot
+
 # initialization
 pygame.init()
 
@@ -16,37 +18,6 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
-class Robot:
-    def __init__(
-            self,
-            center_x,
-            center_y,
-            radius,
-            angle,
-            angular_velocity,
-            rendezvous,
-            ):
-        self.center_x = center_x
-        self.center_y = center_y
-        self.radius = radius
-        self.angle = angle
-        self.angular_velocity = angular_velocity
-        self.rendezvous = rendezvous
-        self.previous_angle = None
-    
-    def get_robot_position():
-        x = self.center_x + self.radius * math.cos(self.angle)
-        y = eslf.center_y + self.radius * math.sin(self.angle)
-        return x, y 
-
-    def transition():
-        self.previous_angle = robots[i].angle
-        self.angle += robots[i].angular_velocity
-        self.angle = float("{:.3f}".format(robots[i].angle))
- 
-# robot properties
-robot_radius = 5
-robot_max_velocity = 0.2
 
 robot_num = 2
 robots = []
@@ -66,15 +37,6 @@ robots.append(Robot(
     angle = 1.0,
     angular_velocity = 0.1,
     rendezvous = [[float("{:.3f}".format(math.pi)), 0]]))
-
-# packet properties
-src_id = 0
-dest_id = 1
-src_angle = 3.14
-dest_angle = 0
-
-src_size = 10
-dest_size = 10
 
 # game loop
 running = True
