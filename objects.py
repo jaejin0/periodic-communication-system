@@ -46,13 +46,4 @@ class Destination:
         self.dest_angle
 
 
-# packet properties
-src_id = 0
-dest_id = 1
-src_angle = 3.14
-dest_angle = 0
-
-src_size = 10
-dest_size = 10
-
 

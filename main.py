@@ -1,8 +1,11 @@
 import pygame
 import math
+from simulation import Simulation
+
 
 # initialization
 pygame.init()
+simulation = Simulation()
 
 # display set up
 SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
@@ -17,22 +20,14 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-        # check if they met
-        # if (i, robots[i]["angle"]) in rendezvous:
     # action choice
     key = pygame.key.get_pressed()
     if key[pygame.K_a] == True and robots[0].angular_velocity <= robot_max_velocity - 0.01:
         robots[0].angular_velocity += 0.01
     elif key[pygame.K_d] == True and robots[0].angular_velocity >= -robot_max_velocity + 0.01:
         robots[0].angular_velocity -= 0.01
-        
-    # transition
-    for i in range(robot_num):
-        robots[i].transition()
-
-    robot_met()
-
-    render()
+   
+    simulation.step()
 
     pygame.display.update()
     clock.tick(60)
