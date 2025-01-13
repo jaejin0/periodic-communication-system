@@ -1,28 +1,29 @@
 from objects import Robot, Source, Destination
-from render import render
+from render import render_simulation, render_robot_met
+import math
 
 class Simulation:
-    def __init__(self, seed=0)
+    def __init__(self, seed=0):
         match seed:
             case 0:
-                robot_num = 2
-                robots = [] 
+                self.robots = [] 
+                
                 # robot 0
-                robots.append(Robot( 
+                self.robots.append(Robot( 
                     center_x = 300,
                     center_y = 250,
-                    radius = 50,
-                    angle = 1.0,
-                    angular_velocity = 0.1,
+                    center_radius = 50,
+                    initial_angle = 1.0,
+                    initial_angular_velocity = 0.1,
                     rendezvous = [[0, 1]])
                 )
                 # robot 1
-                robots.append(Robot(
+                self.robots.append(Robot(
                     center_x = 400,
                     center_y = 250,
-                    radius = 50,
-                    angle = 1.0,
-                    angular_velocity = 0.1,
+                    center_radius = 50,
+                    initial_angle = 1.0,
+                    initial_angular_velocity = 0.1,
                     rendezvous = [[float("{:.3f}".format(math.pi)), 0]])
                 )
                 
@@ -38,25 +39,21 @@ class Simulation:
 
     def step(self):
         # transition
-        for i in range(robot_num):
-            robots[i].transition()
-        robot_met()
-        render()
+        for robot in self.robots:
+            robot.transition()
+        self.robot_met()
+        render_simulation(self.robots)
 
 
     def robot_met(self):
         # check if the robots met
         current_positions = []
-        for i in range(robot_num):
+        for robot in self.robots:
+            x, y = robot.get_robot_position()
             for _x, _y in current_positions:
-                if math.sqrt((x - _x)**2 + (y - _y) **2) <= robot_radius:
+                if math.sqrt((x - _x)**2 + (y - _y) **2) <= robot.robot_radius:
                     render_robot_met(i) 
             current_positions.append([x, y]) 
-        
-        for i in range(robot_num): 
-            if robots[i].angle >= math.pi or robots[i].angle <= -math.pi:
-                robots[i].angle = -robots[i].angle
-            
-
+       
 
 

@@ -1,7 +1,5 @@
 import pygame
-import math
 from simulation import Simulation
-
 
 # initialization
 pygame.init()

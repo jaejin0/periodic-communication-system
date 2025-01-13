@@ -1,3 +1,5 @@
+import math
+
 class Robot:
     def __init__(
             self,
@@ -5,7 +7,7 @@ class Robot:
             center_y,
             center_radius,
             initial_angle,
-            initial_velocity,
+            initial_angular_velocity,
             rendezvous,
             ):
         # static state
@@ -25,15 +27,19 @@ class Robot:
         self.robot_radius = 5
         self.robot_max_velocity = 0.2
    
-    def get_robot_position():
+    def get_robot_position(self):
         x = self.center_x + self.center_radius * math.cos(self.angle)
-        y = eslf.center_y + self.center_radius * math.sin(self.angle)
+        y = self.center_y + self.center_radius * math.sin(self.angle)
         return x, y 
 
-    def transition():
-        self.previous_angle = robots[i].angle
-        self.angle += robots[i].angular_velocity
-        self.angle = float("{:.3f}".format(robots[i].angle))
+    def transition(self):
+        self.previous_angle = self.angle
+        self.angle += self.angular_velocity
+        self.angle = float("{:.3f}".format(self.angle))
+ 
+        if self.angle >= math.pi or self.angle <= -math.pi:
+            self.angle = -self.angle
+        
 
 class Source:
     def __init__(self, robot_id, src_angle):
