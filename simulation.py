@@ -1,9 +1,18 @@
+
+import math
+import pygame
+
 from objects import Robot, Source, Destination
 from render import render_simulation, render_robot_met
-import math
 
 class Simulation:
-    def __init__(self, seed=0):
+    def __init__(self, seed=0, SCREEN_WIDTH=800, SCREEN_HEIGHT=600):
+        # initialize pygame
+        pygame.init()
+        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.clock = pygame.time.Clock()
+        pygame.display.set_caption("Periodic Communication System")
+
         match seed:
             case 0:
                 self.robots = [] 
@@ -38,22 +47,40 @@ class Simulation:
 
 
     def step(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
         # transition
         for robot in self.robots:
             robot.transition()
+        
+        render_simulation(self.robots, self.screen)
+        
         self.robot_met()
-        render_simulation(self.robots)
-
-
+        
+        pygame.display.update()
+        self.clock.tick(60)
+    
     def robot_met(self):
         # check if the robots met
-        current_positions = []
-        for robot in self.robots:
-            x, y = robot.get_robot_position()
-            for _x, _y in current_positions:
-                if math.sqrt((x - _x)**2 + (y - _y) **2) <= robot.robot_radius:
-                    render_robot_met(i) 
-            current_positions.append([x, y]) 
-       
+        n = len(self.robots)
+        current_positions = [self.robots[i].get_robot_position() for i in range(n)]
+        for i in range(n):
+            x, y = current_positions[i]
+            for j in range(n):
+                if i == j:
+                    continue
+                _x, _y = current_positions[j]
+                if math.sqrt((x - _x)**2 + (y - _y) **2) <= self.robots[i].robot_radius + self.robots[j].robot_radius:
+                    # robot met
+                    render_robot_met(self.robots[i], self.screen) 
 
-
+    def action_choice(self):
+        # action choice
+        key = pygame.key.get_pressed()
+        if key[pygame.K_a] == True and self.robots[0].angular_velocity <= self.robots[0].robot_max_velocity - 0.01:
+            self.robots[0].angular_velocity += 0.01
+        elif key[pygame.K_d] == True and self.robots[0].angular_velocity >= -self.robots[0].robot_max_velocity + 0.01:
+            self.robots[0].angular_velocity -= 0.01
+     
