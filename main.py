@@ -1,12 +1,13 @@
 from simulation import Simulation
-import pygame
 simulation = Simulation()
 
+done = False
 # game loop
 while True: 
     simulation.action_choice()
     simulation.step()
 
-pygame.quit()
-
+    if done:
+        simulation.terminate()
+        break
 

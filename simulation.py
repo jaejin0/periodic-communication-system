@@ -61,7 +61,12 @@ class Simulation:
         
         pygame.display.update()
         self.clock.tick(60)
-    
+   
+    def terminate(self):
+        pygame.quit()
+        print("Game terminated")
+        return True
+
     def robot_met(self):
         # check if the robots met
         n = len(self.robots)
