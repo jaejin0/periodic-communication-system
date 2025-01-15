@@ -16,7 +16,6 @@ class Simulation:
         match seed:
             case 0:
                 self.robots = [] 
-                
                 # robot 0
                 self.robots.append(Robot( 
                     center_x = 300,
@@ -24,8 +23,8 @@ class Simulation:
                     center_radius = 50,
                     initial_angle = 1.0,
                     initial_angular_velocity = 0.1,
-                    rendezvous = [[0, 1]])
-                )
+                    rendezvous = [[0, 1]]
+                ))
                 # robot 1
                 self.robots.append(Robot(
                     center_x = 400,
@@ -33,19 +32,23 @@ class Simulation:
                     center_radius = 50,
                     initial_angle = 1.0,
                     initial_angular_velocity = 0.1,
-                    rendezvous = [[float("{:.3f}".format(math.pi)), 0]])
-                )
+                    rendezvous = [[float("{:.3f}".format(math.pi)), 0]]
+                ))
+
+                self.sources = []
+                # source 0
+                self.sources.append(Source(
+                    src_id = 0,
+                    src_angle = float("{:.3f}".format(math.pi))
+                ))
+               
+                self.destinations = []
+                # destination 0
+                self.destinations.append(Destination(
+                    dest_id = 1,
+                    dest_angle = 0
+                ))
                 
-                # packet properties
-                src_id = 0
-                dest_id = 1
-                src_angle = 3.14
-                dest_angle = 0
-
-                src_size = 10
-                dest_size = 10
-
-
     def step(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -55,7 +58,7 @@ class Simulation:
         for robot in self.robots:
             robot.transition()
         
-        render_simulation(self.robots, self.screen)
+        render_simulation(self.screen, self.robots, self.sources, self.deestinations)
         
         self.robot_met()
         
