@@ -43,13 +43,13 @@ class Robot:
 
 class Source:
     def __init__(self, robot_id, src_angle):
-        self.robot_id
-        self.src_angle
+        self.robot_id = robot_id
+        self.src_angle = src_angle
 
 class Destination:
     def __init__(self, robot_id, dest_angle):
-        self.robot_id
-        self.dest_angle
+        self.robot_id = robot_id
+        self.dest_angle = dest_angle
 
 
 

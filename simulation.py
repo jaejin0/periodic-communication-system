@@ -3,7 +3,7 @@ import math
 import pygame
 
 from objects import Robot, Source, Destination
-from render import render_simulation, render_robot_met
+from renderer import Renderer
 
 class Simulation:
     def __init__(self, seed=0, SCREEN_WIDTH=800, SCREEN_HEIGHT=600):
@@ -38,17 +38,19 @@ class Simulation:
                 self.sources = []
                 # source 0
                 self.sources.append(Source(
-                    src_id = 0,
+                    robot_id = 0,
                     src_angle = float("{:.3f}".format(math.pi))
                 ))
                
                 self.destinations = []
                 # destination 0
                 self.destinations.append(Destination(
-                    dest_id = 1,
+                    robot_id = 1,
                     dest_angle = 0
                 ))
-                
+
+        self.renderer = Renderer(self.screen, self.robots, self.sources, self.destinations)
+
     def step(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -58,8 +60,8 @@ class Simulation:
         for robot in self.robots:
             robot.transition()
         
-        render_simulation(self.screen, self.robots, self.sources, self.deestinations)
-        
+        self.renderer.render_simulation(self.robots, self.sources, self.destinations) 
+
         self.robot_met()
         
         pygame.display.update()
@@ -82,7 +84,7 @@ class Simulation:
                 _x, _y = current_positions[j]
                 if math.sqrt((x - _x)**2 + (y - _y) **2) <= self.robots[i].robot_radius + self.robots[j].robot_radius:
                     # robot met
-                    render_robot_met(self.robots[i], self.screen) 
+                    self.renderer.render_robot_met(self.robots[i]) 
 
     def action_choice(self):
         # action choice
