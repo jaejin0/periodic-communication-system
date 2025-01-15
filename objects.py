@@ -45,11 +45,16 @@ class Source:
     def __init__(self, robot_id, src_angle):
         self.robot_id = robot_id
         self.src_angle = src_angle
+        
+        # default properties
+        self.src_size = 10
 
 class Destination:
     def __init__(self, robot_id, dest_angle):
         self.robot_id = robot_id
         self.dest_angle = dest_angle
 
+        # default properties
+        self.dest_size = 10
 
 
