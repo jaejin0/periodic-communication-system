@@ -1,4 +1,5 @@
 import math
+import sched
 
 class Robot:
     def __init__(
@@ -42,12 +43,20 @@ class Robot:
         
 
 class Source:
-    def __init__(self, robot_id, src_angle):
+    def __init__(self, robot_id, src_angle, time_gap):
         self.robot_id = robot_id
         self.src_angle = src_angle
-        
+        self.time_gap = time_gap
+
+        # dynamic state
+        self.packet_num = 0
+
         # default properties
         self.src_size = 10
+        self.scheduler = sched()
+
+    def push_source(self):
+       scheduler.enter(60, 1, do_something, (scheduler,))
 
 class Destination:
     def __init__(self, robot_id, dest_angle):
