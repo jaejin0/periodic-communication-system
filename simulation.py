@@ -20,7 +20,8 @@ class Simulation:
             case 0:
                 self.robots = [] 
                 # robot 0
-                self.robots.append(Robot( 
+                self.robots.append(Robot(
+                    robot_id = 0,
                     center_x = 300,
                     center_y = 250,
                     center_radius = 50,
@@ -30,6 +31,7 @@ class Simulation:
                 ))
                 # robot 1
                 self.robots.append(Robot(
+                    robot_id = 1,
                     center_x = 400,
                     center_y = 250,
                     center_radius = 50,
@@ -41,16 +43,17 @@ class Simulation:
                 self.sources = []
                 # source 0
                 self.sources.append(Source(
-                    robot_id = 0,
+                    robot = self.robots[0], 
                     src_angle = PI,
-                    time_gap = 1000
+                    time_gap = 1000,
                 ))
-                
+
                 self.destinations = []
                 # destination 0
                 self.destinations.append(Destination(
                     robot_id = 1,
-                    dest_angle = 0
+                    dest_angle = 0,
+                    position = self.robots[1].get_robot_position()
                 ))
 
         self.renderer = Renderer(self.screen, self.robots, self.sources, self.destinations)
@@ -86,13 +89,23 @@ class Simulation:
         current_positions = [self.robots[i].get_robot_position() for i in range(n)]
         for i in range(n):
             x, y = current_positions[i]
+            
+            # check if robot met another robot
             for j in range(n):
                 if i == j:
                     continue
                 _x, _y = current_positions[j]
                 if math.sqrt((x - _x)**2 + (y - _y) **2) <= self.robots[i].robot_radius + self.robots[j].robot_radius:
-                    # robot met
+                    # robots did meet
                     self.renderer.render_robot_met(self.robots[i]) 
+
+            # check if robot met a source
+            for s in self.sources:
+                _x, _y = s.x, s.y
+                if math.sqrt((x - _x)**2 + (y - _y) **2) <= self.robots[i].robot_radius:
+                    # robots did meet
+                    self.renderer.render_robot_met(self.robots[i]) 
+
 
     def action_choice(self):
         # action choice

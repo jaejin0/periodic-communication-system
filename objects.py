@@ -4,6 +4,7 @@ import sched
 class Robot:
     def __init__(
             self,
+            robot_id,
             center_x,
             center_y,
             center_radius,
@@ -12,6 +13,7 @@ class Robot:
             rendezvous,
             ):
         # static state
+        self.robot_id = robot_id
         self.center_x = center_x
         self.center_y = center_y
         self.center_radius = center_radius
@@ -23,7 +25,8 @@ class Robot:
         self.angular_velocity = initial_angular_velocity
         self.angle = initial_angle
         self.previous_angle = None
-        
+        self.packets = {}
+
         # default properties
         self.robot_radius = 5
         self.robot_max_velocity = 0.2
@@ -43,10 +46,12 @@ class Robot:
         
 
 class Source:
-    def __init__(self, robot_id, src_angle, time_gap):
-        self.robot_id = robot_id
+    def __init__(self, robot, src_angle, time_gap):
+        self.robot_id = robot.robot_id
         self.src_angle = src_angle
         self.time_gap = time_gap # ms
+
+        self.x, self.y = self.get_source_position(robot.center_x, robot.center_y, robot.center_radius)
 
         # dynamic state
         self.packets = []
@@ -64,12 +69,19 @@ class Source:
             self.packet_id += 1
             self.packet_hold_num += 1
             self.last_create_time = time
-            print(packet.packet_id)
+            print(f"Packet {packet.packet_id} published")
+    
+    def get_source_position(self, center_x, center_y, center_radius):
+        x = center_x + center_radius * math.cos(self.src_angle)
+        y = center_y + center_radius * math.sin(self.src_angle)
+        return x, y 
+
 
 class Destination:
-    def __init__(self, robot_id, dest_angle):
+    def __init__(self, robot_id, dest_angle, position):
         self.robot_id = robot_id
         self.dest_angle = dest_angle
+        self.x, self.y = position
 
         # default properties
         self.dest_size = 10
