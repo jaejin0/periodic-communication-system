@@ -5,6 +5,8 @@ import pygame
 from objects import Robot, Source, Destination
 from renderer import Renderer
 
+PI = float("{:.3f}".format(math.pi))
+
 class Simulation:
     def __init__(self, seed=0, SCREEN_WIDTH=800, SCREEN_HEIGHT=600):
         # initialize pygame
@@ -12,6 +14,7 @@ class Simulation:
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
         pygame.display.set_caption("Periodic Communication System")
+        self.timestep = pygame.time.get_ticks()
 
         match seed:
             case 0:
@@ -32,16 +35,17 @@ class Simulation:
                     center_radius = 50,
                     initial_angle = 1.0,
                     initial_angular_velocity = 0.1,
-                    rendezvous = [[float("{:.3f}".format(math.pi)), 0]]
+                    rendezvous = [[PI, 0]]
                 ))
 
                 self.sources = []
                 # source 0
                 self.sources.append(Source(
                     robot_id = 0,
-                    src_angle = float("{:.3f}".format(math.pi))
+                    src_angle = PI,
+                    time_gap = 1000
                 ))
-               
+                
                 self.destinations = []
                 # destination 0
                 self.destinations.append(Destination(
@@ -59,11 +63,15 @@ class Simulation:
         # transition
         for robot in self.robots:
             robot.transition()
-        
+
+        for s in self.sources:
+            s.create_packet(pygame.time.get_ticks())
+
         self.renderer.render_simulation(self.robots, self.sources, self.destinations) 
 
         self.robot_met()
-        
+
+        self.timestep += 1
         pygame.display.update()
         self.clock.tick(60)
    

@@ -46,17 +46,25 @@ class Source:
     def __init__(self, robot_id, src_angle, time_gap):
         self.robot_id = robot_id
         self.src_angle = src_angle
-        self.time_gap = time_gap
+        self.time_gap = time_gap # ms
 
         # dynamic state
-        self.packet_num = 0
+        self.packets = []
+        self.packet_id = 0
+        self.packet_hold_num = 0
+        self.last_create_time = 0
 
         # default properties
         self.src_size = 10
-        self.scheduler = sched()
 
-    def push_source(self):
-       scheduler.enter(60, 1, do_something, (scheduler,))
+    def create_packet(self, time):
+        if time > self.last_create_time + self.time_gap:
+            packet = Packet(self.packet_id, time) 
+            self.packets.append(packet)
+            self.packet_id += 1
+            self.packet_hold_num += 1
+            self.last_create_time = time
+            print(packet.packet_id)
 
 class Destination:
     def __init__(self, robot_id, dest_angle):
@@ -66,4 +74,8 @@ class Destination:
         # default properties
         self.dest_size = 10
 
-
+class Packet:
+    def __init__(self, packet_id, timestep_produced):
+        self.packet_id = packet_id
+        self.timestep_produced = timestep_produced
+        # location for rendering
