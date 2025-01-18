@@ -19,4 +19,16 @@ class Kuramoto:
         dxdt = self.natfreqs + coupling * interactions.sum(axis=0)
         return dxdt
 
- 
+    def integrate(self, angles_vec, adj_mat):
+        n_interactions = (adj_mat != 0).sum(axis=0)
+        coupling = self.coupling / n_interactions
+
+        t = np.linspace(0, self.T, int(self.T/self.dt))
+        timeseries = odeint(self.derivative, angles_vec, t, args=(adj_mat, coupling))
+        return timeseries.T
+
+    def run(self, adj_mat=None, angles_vec=None):
+        if angles_vec is None:
+            angles_vec = self.init_angles()
+
+        return self.integrate(angles_vec, adj_mat)
