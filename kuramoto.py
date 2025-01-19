@@ -32,3 +32,18 @@ class Kuramoto:
             angles_vec = self.init_angles()
 
         return self.integrate(angles_vec, adj_mat)
+
+    def phase_coherence(self, angles_vec):
+        suma = sum([(np.e ** (ij * i)) for i in angles_vec])
+        return abs(suma / len(angles_vec))
+
+    def mean_frequency(self, act_mat, adj_mat):
+        _, n_steps = act_mat.shape
+
+        dxdt = np.zeros_like(act_mat)
+        for time in range(n_steps):
+            dxdt[:, time] = self.derivative(act_mat[:, time], None, adj_mat)
+
+        integral = np.sum(dxdt * self.dt, axis=1)
+        meanfreq = integral / self.T
+        return meanfreq
