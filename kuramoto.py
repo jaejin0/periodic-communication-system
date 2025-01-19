@@ -1,7 +1,7 @@
 import numpy as np
 
 class Kuramoto:
-    def __init__(self, coupling=1, dt=0.01, T=10, n_nodes, natfreqs):
+    def __init__(self, coupling=1, dt=0.01, T=10, n_nodes=None, natfreqs=None):
         self.dt = dt
         self.T = T
         self.coupling = coupling
