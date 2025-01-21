@@ -36,7 +36,7 @@ class Kuramoto:
         self.K = K
         # random distribution of initial angles and natural frequencies 
         self.angles = np.random.normal(loc=0, scale= 2 * np.pi, size=N)
-        self.natural_frequencies = np.random.normal(loc=0.01, scale=0.000001, size=N)
+        self.natural_frequencies = np.random.normal(loc=0.01, scale=0.01, size=N)
         # a matrix representing connectivity between particles
         self.adj_mat = nx.to_numpy_array(nx.erdos_renyi_graph(n=N, p=1)) 
         
@@ -57,9 +57,9 @@ class Kuramoto:
 
 
     def step(self):
-        self.derivative()
-        self.angles += self.natural_frequencies
-        # self.angles += self.derivative()
+        # self.derivative()
+        # self.angles += self.natural_frequencies
+        self.angles += self.derivative()
         self.render()
         pygame.display.update()
         self.clock.tick(60)
@@ -67,11 +67,13 @@ class Kuramoto:
     def derivative(self):
         angles_i, angles_j = np.meshgrid(self.angles, self.angles)
         interactions = self.adj_mat * np.sin(angles_j - angles_i)
-         
-        #derivative = self.natural_frequencies + self.K * interactions.sum(axis=0) / self.N
-        self.natural_frequencies += self.K * interactions.sum(axis=0) / self.N
         
-        return #derivative
+        # zeros = np.zeros(self.N)
+        # zeros[np.random.randint(self.N)] = 1
+        derivative = self.natural_frequencies + self.K * interactions.sum(axis=0) / self.N
+        # self.natural_frequencies += self.K * interactions.sum(axis=0) / self.N
+        print(derivative) 
+        return derivative
 
     def render(self):
         self.screen.fill(WHITE) 
@@ -83,6 +85,6 @@ class Kuramoto:
 
 if __name__ == "__main__":
     # a balance between the scale of natural frequencies and constant K matters. If not, the simulation does not converge
-    model = Kuramoto(10, 0.001)
+    model = Kuramoto(10, 0.1)
     while True:
         model.step()
