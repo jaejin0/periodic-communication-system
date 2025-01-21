@@ -35,11 +35,10 @@ class Kuramoto:
         self.N = N
         self.K = K
         # random distribution of initial angles and natural frequencies 
-        self.angles = np.random.normal(loc=0, scale= 2 * np.pi, size=N)
-        self.natural_frequencies = np.random.normal(loc=0.01, scale=0.000001, size=N)
+        self.angles = 2 * np.pi * np.random.normal(size=N)
+        self.natural_frequencies = 0.1 * np.random.normal(size=N)
         # a matrix representing connectivity between particles
         self.adj_mat = nx.to_numpy_array(nx.erdos_renyi_graph(n=N, p=1)) 
-        
 
         print(self.angles)
         print(self.natural_frequencies)
@@ -68,8 +67,8 @@ class Kuramoto:
         angles_i, angles_j = np.meshgrid(self.angles, self.angles)
         interactions = self.adj_mat * np.sin(angles_j - angles_i)
          
-        #derivative = self.natural_frequencies + self.K * interactions.sum(axis=0) / self.N
-        self.natural_frequencies += self.K * interactions.sum(axis=0) / self.N
+        # derivative = self.natural_frequencies + self.K * interactions.sum(axis=0) / self.N
+        self.natural_frequencies = self.K * interactions.sum(axis=0) / self.N
         
         return #derivative
 
@@ -83,6 +82,6 @@ class Kuramoto:
 
 if __name__ == "__main__":
     # a balance between the scale of natural frequencies and constant K matters. If not, the simulation does not converge
-    model = Kuramoto(10, 0.001)
+    model = Kuramoto(100, 0.5)
     while True:
         model.step()
