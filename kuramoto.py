@@ -13,23 +13,6 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
-class Node:
-    def __init__(self, angle, natural_frequency):
-        self.angle = angle
-        self.natural_frequency = natural_frequency
-        self.angular_velocity = angular_velocity
-
-
-    def update_angle(self, derivative):
-        self.angle += derivative
-        self.limit_angle() 
-
-    def limit_angle():
-        self.angular_velocity = float("{:.4f}".format(self.angular_velocity))
-        self.angle = float("{:.4f}".format(self.angle))
-        if self.angle > np.pi or self.angle < np.pi:
-            self.angle *= -1
-
 class Kuramoto:
     def __init__(self, N=30, K=1): 
         self.N = N
@@ -72,7 +55,6 @@ class Kuramoto:
         # zeros[np.random.randint(self.N)] = 1
         derivative = self.natural_frequencies + self.K * interactions.sum(axis=0) / self.N
         # self.natural_frequencies += self.K * interactions.sum(axis=0) / self.N
-        print(derivative) 
         return derivative
 
     def render(self):
