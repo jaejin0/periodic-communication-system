@@ -1,6 +1,7 @@
 import numpy as np
 import networkx as nx
 import pygame
+import sys
 
 # screen
 WIDTH = 800
@@ -22,17 +23,15 @@ class Kuramoto:
         self.natural_frequencies = np.random.normal(loc=0.01, scale=0.01, size=N)
         # a matrix representing connectivity between particles
         self.adj_mat = nx.to_numpy_array(nx.erdos_renyi_graph(n=N, p=1)) 
-        
 
-        print(self.angles)
-        print(self.natural_frequencies)
-
+        # game setup
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         self.clock = pygame.time.Clock()
         pygame.display.set_caption("Kuramoto model simulation")
         self.timestep = pygame.time.get_ticks()
 
+        # configuration
         self.center = (WIDTH // 2, HEIGHT // 2)
         self.radius = HEIGHT // 4
         self.circle_thickness = 2
@@ -40,8 +39,6 @@ class Kuramoto:
 
 
     def step(self):
-        # self.derivative()
-        # self.angles += self.natural_frequencies
         self.angles += self.derivative()
         self.render()
         pygame.display.update()
@@ -51,10 +48,7 @@ class Kuramoto:
         angles_i, angles_j = np.meshgrid(self.angles, self.angles)
         interactions = self.adj_mat * np.sin(angles_j - angles_i)
         
-        # zeros = np.zeros(self.N)
-        # zeros[np.random.randint(self.N)] = 1
         derivative = self.natural_frequencies + self.K * interactions.sum(axis=0) / self.N
-        # self.natural_frequencies += self.K * interactions.sum(axis=0) / self.N
         return derivative
 
     def render(self):
@@ -67,6 +61,14 @@ class Kuramoto:
 
 if __name__ == "__main__":
     # a balance between the scale of natural frequencies and constant K matters. If not, the simulation does not converge
-    model = Kuramoto(10, 0.1)
+    N = 10
+    K = 0.1
+    
+    if len(sys.argv) == 2:
+        N = int(sys.argv[1])
+    elif len(sys.argv) == 3:
+        N, K = int(sys.argv[1]), float(sys.argv[2])
+
+    model = Kuramoto(N, K)
     while True:
         model.step()
