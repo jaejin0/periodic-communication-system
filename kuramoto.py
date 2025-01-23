@@ -15,7 +15,7 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
 class Kuramoto:
-    def __init__(self, N=30, K=1): 
+    def __init__(self, N=100, K=1): 
         self.N = N
         self.K = K
         # random distribution of initial angles and natural frequencies 
@@ -61,7 +61,7 @@ class Kuramoto:
 
 if __name__ == "__main__":
     # a balance between the scale of natural frequencies and constant K matters. If not, the simulation does not converge
-    N = 10
+    N = 100
     K = 0.1
     
     if len(sys.argv) == 2:
