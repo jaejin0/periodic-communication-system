@@ -15,14 +15,17 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
 class Communication:
-    def __init__(self, N: list[int]=[1, 1], K=1): 
-        self.N = N
+    def __init__(self, N1=1, N2=1, K=1): 
+        self.N1 = N1
+        self.N2 = N2
         self.K = K
         # random distribution of initial angles and natural frequencies 
-        self.angles = np.array([np.random.normal(loc=0, scale= 2 * np.pi, size=n) for n in N]).flatten()
-        self.natural_frequencies = np.array([np.random.normal(loc=0.01, scale=0.01, size=n) for n in N]).flatten()
+        self.angles1 = np.random.normal(loc=0, scale= 2 * np.pi, size=N1)
+        self.angles2 = np.random.normal(loc=0, scale= 2 * np.pi, size=N2)
+        self.natural_frequencies1 = np.random.normal(loc=0.01, scale=0.01, size=N1)  
+        self.natural_frequencies2 = np.random.normal(loc=0.01, scale=0.01, size=N2)
         # a matrix representing connectivity between particles
-        self.adj_mat = nx.to_numpy_array(nx.erdos_renyi_graph(n=sum(N), p=1)) 
+        self.adj_mat = nx.to_numpy_array(nx.erdos_renyi_graph(n=N1+N2, p=1)) 
 
         # game setup
         pygame.init()
@@ -36,33 +39,47 @@ class Communication:
         self.radius2 = HEIGHT // 4
         self.center1 = ((WIDTH // 2) - ((self.radius1 + self.radius2) / 2), HEIGHT // 2)
         self.center2 = ((WIDTH // 2) + ((self.radius1 + self.radius2) / 2), HEIGHT // 2)
+        self.rendezvous1 = 0
+        self.rendezvous2 = np.pi / 2
         self.circle_thickness = 2
         self.particle_radius = 5
 
     def step(self):
-        self.angles += self.derivative()
+        self.angles1 += self.derivative1()
+        self.angles2 += self.derivative2()
         self.render()
         pygame.display.update()
         self.clock.tick(60)
     
-    def derivative(self):
-        '''
-        index indicates what derivative it wants to calculate for
-        '''
-        angles_i, angles_j = np.meshgrid(self.angles, self.angles)
+    def derivative1(self):
+        angles = np.concatenate((self.angles1 + self.rendezvous1, self.angles2 + self.rendezvous2))
+        angles_i, angles_j = np.meshgrid(angles, angles)
         interactions = self.adj_mat * np.sin(angles_j - angles_i)
+       
+        adjust_frequencies = self.K * interactions.sum(axis=0) / (self.N1 + self.N2)
+        derivative = self.natural_frequencies1 + adjust_frequencies[:self.N1] 
         
-        derivative = self.natural_frequencies.flatten() + self.K * interactions.sum(axis=0) / sum(self.N)
+        return self.natural_frequencies1
+
+        return derivative
+
+    def derivative2(self):
+        angles = np.concatenate((self.angles1 + self.rendezvous1, self.angles2 + self.rendezvous2))
+        angles_i, angles_j = np.meshgrid(angles, angles)
+        interactions = self.adj_mat * np.sin(angles_j - angles_i)
+       
+        adjust_frequencies = self.K * interactions.sum(axis=0) / (self.N1 + self.N2)
+        derivative = self.natural_frequencies2 + adjust_frequencies[self.N1:] 
         return derivative
 
     def render(self):
         self.screen.fill(WHITE) 
         pygame.draw.circle(self.screen, BLUE, self.center1, self.radius1, self.circle_thickness)
         pygame.draw.circle(self.screen, BLUE, self.center2, self.radius2, self.circle_thickness)
-        for a in self.angles[0:self.N[0]]:
+        for a in self.angles1:
             x, y = self.center1[0] + np.cos(a) * self.radius1, self.center1[1] + np.sin(a) * self.radius1
             pygame.draw.circle(self.screen, RED, (x, y), self.particle_radius)
-        for a in self.angles[self.N[1]:]:
+        for a in self.angles2:
             x, y = self.center2[0] + np.cos(a) * self.radius2, self.center2[1] + np.sin(a) * self.radius2
             pygame.draw.circle(self.screen, RED, (x, y), self.particle_radius)
 
@@ -78,6 +95,6 @@ if __name__ == "__main__":
         N1, N2 = int(sys.argv[1]), int(sys.argv[2])
         K = float(sys.argv[3])
     
-    model = Communication([N1, N2], K)
+    model = Communication(N1, N2, K)
     while True:
         model.step()
