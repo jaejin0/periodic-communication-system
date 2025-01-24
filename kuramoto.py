@@ -46,6 +46,8 @@ class Kuramoto:
     
     def derivative(self):
         angles_i, angles_j = np.meshgrid(self.angles, self.angles)
+        print("angles_i", angles_i)
+        print("angles_j", angles_j)
         interactions = self.adj_mat * np.sin(angles_j - angles_i)
         
         derivative = self.natural_frequencies + self.K * interactions.sum(axis=0) / self.N
