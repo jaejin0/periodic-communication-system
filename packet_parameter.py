@@ -37,6 +37,13 @@ class Node:
 
     def compute_rendezvous(self, neighbor: Node):
         center_to_center_distance = math.sqrt(((self.center[0] - neighbor.center[0])**2) + ((self.center[1] - neighbor.center[1])**2)) 
+        if center_to_center_distance <= self.radius + neighbor.radius:
+            # two rendezvous points
+        elif center_to_center_distance == self.radius + neighbor.radius:
+            # one rendezvous points
+        else:
+            # no rendezvous point
+
 
 class Communication:
     def __init__(self, N1=1, N2=1, K=1): 
