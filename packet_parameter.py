@@ -1,5 +1,6 @@
 import numpy as np
 import networkx as nx
+import math
 import pygame
 import sys
 
@@ -17,16 +18,25 @@ BLUE = (0, 0, 255)
 class Node:
     def __init__(self, angle=None, natural_frequency=None, K: float = 0.1
                  center_x: int, center_y: int, radius: float):
+        # initial values
         self.angle = angle if angle else np.random.normal(loc=0, scale=2*np.pi)
         self.natural_frequency = natural_frequency if natural_frequency else np.random.normal(loc=0.02, scale=0.01)
         self.K = K
         self.center = (center_x, center_y)
         self.radius = radius
 
+        # updated with 
         self.neighbors = []
-        self.neighbors_angle = [] # can be calculated using neighbor node's center and radius, but storing rendezvous angle reduce computation time
+        self.rendezvous = [] # can be calculated using neighbor node's center and radius, but storing rendezvous angle reduce computation time
         
         self.packets = 0 # as packets intended to flow in one direction, counting packets work fine without storing packet ids
+    
+    def add_neighbor(self, neighbor: Node):
+        self.neighbors.append(neighbor)
+        self.rendezvous.append(self.compute_rendezvous(neighbor))
+
+    def compute_rendezvous(self, neighbor: Node):
+        center_to_center_distance = math.sqrt(((self.center[0] - neighbor.center[0])**2) + ((self.center[1] - neighbor.center[1])**2)) 
 
 class Communication:
     def __init__(self, N1=1, N2=1, K=1): 
