@@ -14,6 +14,20 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
+class Node:
+    def __init__(self, angle=None, natural_frequency=None, K: float = 0.1
+                 center_x: int, center_y: int, radius: float):
+        self.angle = angle if angle else np.random.normal(loc=0, scale=2*np.pi)
+        self.natural_frequency = natural_frequency if natural_frequency else np.random.normal(loc=0.02, scale=0.01)
+        self.K = K
+        self.center = (center_x, center_y)
+        self.radius = radius
+
+        self.neighbors = []
+        self.neighbors_angle = [] # can be calculated using neighbor node's center and radius, but storing rendezvous angle reduce computation time
+        
+        self.packets = 0 # as packets intended to flow in one direction, counting packets work fine without storing packet ids
+
 class Communication:
     def __init__(self, N1=1, N2=1, K=1): 
         self.N1 = N1
