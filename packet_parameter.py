@@ -16,11 +16,14 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
 class Node:
-    def __init__(self, angle=None, natural_frequency=None, K: float = 0.1,
-                 center_x: int = 0, center_y: int = 0, radius: float = 3):
+    def __init__(self, angle=None, natural_frequency=None, K: float = 1,
+                 center_x: int = 0, center_y: int = 0, radius: float = 30,
+                 max_derivative: float = float('inf'), min_derivative: float = float('-inf'),
+                 source: bool = False):
         # initial values
         self.angle = angle if angle else np.random.normal(loc=0, scale=2*np.pi)
-        self.natural_frequency = natural_frequency if natural_frequency else np.random.normal(loc=0.02, scale=0.01)
+        self.natural_frequency = natural_frequency if natural_frequency else np.random.normal(loc=0, scale=0.04)
+        self.max_derivative, self.min_derivative = max_derivative, min_derivative 
         self.K = K
         self.center = (center_x, center_y)
         self.radius = radius
@@ -28,17 +31,23 @@ class Node:
         
         # updated with add_neighbor function 
         self.neighbors = []
-        self.rendezvous = {} # Node : angle pair # can be calculated using neighbor node's center and radius, but storing rendezvous angle reduce computation time
+        self.rendezvous = {} # Node : angle pair 
         self.adj_mat = nx.to_numpy_array(nx.erdos_renyi_graph(n=0, p=1)) 
 
         # configured for rendering 
+        self.circle_color = BLUE
         self.circle_thickness = 2
+        self.particle_color = RED
         self.particle_radius = 5
+        self.color_timer = 0
+
+        # assign this node to receive source randomly
+        self.source = source 
+        self.source_random_param = 0.01 if source else 0
 
     def add_neighbor(self, neighbor):
-        print(type(neighbor))
         epsilon = 3
-        center_to_center_distance = math.sqrt(((self.center[0] - neighbor.center[0])**2) + ((self.center[1] - neighbor.center[1])**2)) 
+        center_to_center_distance = math.sqrt((self.center[0] - neighbor.center[0])**2 + (self.center[1] - neighbor.center[1])**2) 
         # if center_to_center_distance <= self.radius + neighbor.radius:
             # two rendezvous points
         if abs(center_to_center_distance - (self.radius + neighbor.radius)) <= epsilon:
@@ -51,28 +60,53 @@ class Node:
         self.neighbors.append(neighbor)
    
     def step(self):
-        self.angle += self.derivative()
- 
+        derivative = max(self.min_derivative, min(self.max_derivative, self.derivative()))
+        self.angle += derivative
+        self.color_timer -= 1
+        if self.source:
+            if np.random.random() < self.source_random_param:
+                self.packets += 1
+                self.change_particle_color(BLACK)
+                print("Packet added")
+        if self.color_timer == 0 and self.particle_color != RED:
+            self.particle_color = RED
+        self.met_neighbor()
+
+    def change_particle_color(self, color):
+        self.particle_color = color
+        self.color_timer = 10
+
     def derivative(self):
-        N = 0
-        for n in self.neighbors:
-            N += self.new_packet_num(n)
-        print(N)
-        if N == 0:
-            return self.natural_frequency
-        
+        N = len(self.neighbors)
+
         summation = 0
         for n, r in zip(self.neighbors, self.rendezvous):
             new_packets = self.new_packet_num(n)
             summation += self.K * new_packets * np.sin((n.angle + n.rendezvous[self]) - (self.angle + self.rendezvous[n]))
-        derivative = self.natural_frequency + (summation / N) 
+        derivative = self.natural_frequency + (summation / N)
         return derivative
 
     def new_packet_num(self, neighbor) -> int:
         return neighbor.packets - self.packets if self.packets < neighbor.packets else 0
 
-    def render(self):
-        pygame.draw.circle(self.screen, BLUE, self.center1, self.radius1, self.circle_thickness)
+    def met_neighbor(self):
+        x, y = self.particle_position()
+        for n in self.neighbors:
+            n_x, n_y = n.particle_position()
+            particle_to_particle_distance = math.sqrt((x - n_x)**2 + (y - n_y)**2)
+            if particle_to_particle_distance < self.particle_radius + n.particle_radius:
+                # met
+                self.receive_packets(n)
+
+    def receive_packets(self, neighbor):
+        if self.new_packet_num(neighbor) > 0:
+            self.packets = neighbor.packets
+            self.change_particle_color(GREEN)
+
+    def particle_position(self):
+        x = self.center[0] + self.radius * math.cos(self.angle)
+        y = self.center[1] + self.radius * math.sin(self.angle)
+        return x, y
 
 class Simulation:
     def __init__(self, nodes: list[Node]): 
@@ -81,7 +115,7 @@ class Simulation:
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         self.clock = pygame.time.Clock()
         pygame.display.set_caption("Kuramoto-based Communication model simulation")
-        self.timestep = pygame.time.get_ticks()
+        self.timestep = 0
 
         # node setup
         self.nodes = nodes
@@ -92,36 +126,41 @@ class Simulation:
                 self.nodes[i].add_neighbor(self.nodes[j])
 
     def step(self):
-        for n in self.nodes:
+        if self.timestep % 100 == 0:
+            print("Node | Packet")
+        for i, n in enumerate(self.nodes):
             n.step()
+            if self.timestep % 100 == 0:
+                n.particle_color = RED
+                print(f"{i}    |{n.packets}")
         self.render()
         pygame.display.update()
         self.clock.tick(60)
+        self.timestep += 1
 
     def render(self):
         self.screen.fill(WHITE) 
         for n in self.nodes:
-            pygame.draw.circle(self.screen, BLUE, n.center, n.radius, n.circle_thickness)
-            x, y = n.center[0] + np.cos(n.angle) * n.radius, n.center[1] + np.sin(n.angle) * n.radius
-            pygame.draw.circle(self.screen, RED, (x, y), n.particle_radius)
+            pygame.draw.circle(self.screen, n.circle_color, n.center, n.radius, n.circle_thickness)
+        for n in self.nodes: 
+            x, y = n.particle_position()
+            pygame.draw.circle(self.screen, n.particle_color, (x, y), n.particle_radius)
 
 if __name__ == "__main__":
     # a balance between the scale of natural frequencies and constant K matters. If not, the simulation does not converge
     # def __init__(self, angle=None, natural_frequency=None, K: float = 0.1
     #              center_x: int, center_y: int, radius: float):
-    
-    if len(sys.argv) == 3:
-        N1, N2 = int(sys.argv[1]), int(sys.argv[2])
-    elif len(sys.argv) == 4:
-        N1, N2 = int(sys.argv[1]), int(sys.argv[2])
-        K = float(sys.argv[3])
+   
+    K = 0.1
+    if len(sys.argv) == 2:
+        K = float(sys.argv[1]) 
   
     nodes = [
-        Node(center_x = 300, center_y = 300, radius = 50),
-        Node(center_x = 400, center_y = 300, radius = 50)
+        Node(source = True, K = K, center_x = 300, center_y = 300, radius = 50),
+        Node(K = K, center_x = 400, center_y = 300, radius = 50),
+        Node(K = K, center_x = 500, center_y = 300, radius = 50) 
     ]
-    nodes[0].packets = 10
-
+    
     model = Simulation(nodes)
     while True:
         model.step()
