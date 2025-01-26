@@ -16,8 +16,8 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
 class Node:
-    def __init__(self, angle=None, natural_frequency=None, K: float = 0.1
-                 center_x: int, center_y: int, radius: float):
+    def __init__(self, angle=None, natural_frequency=None, K: float = 0.1,
+                 center_x: int = 0, center_y: int = 0, radius: float = 3):
         # initial values
         self.angle = angle if angle else np.random.normal(loc=0, scale=2*np.pi)
         self.natural_frequency = natural_frequency if natural_frequency else np.random.normal(loc=0.02, scale=0.01)
@@ -29,13 +29,14 @@ class Node:
         # updated with add_neighbor function 
         self.neighbors = []
         self.rendezvous = {} # Node : angle pair # can be calculated using neighbor node's center and radius, but storing rendezvous angle reduce computation time
-        self.adj_mat = nx.to_numpy_array(nx.erdoes_renyi_graph(n=0, p=1)) 
+        self.adj_mat = nx.to_numpy_array(nx.erdos_renyi_graph(n=0, p=1)) 
 
         # configured for rendering 
         self.circle_thickness = 2
         self.particle_radius = 5
 
-    def add_neighbor(self, neighbor: Node):
+    def add_neighbor(self, neighbor):
+        print(type(neighbor))
         epsilon = 3
         center_to_center_distance = math.sqrt(((self.center[0] - neighbor.center[0])**2) + ((self.center[1] - neighbor.center[1])**2)) 
         # if center_to_center_distance <= self.radius + neighbor.radius:
@@ -50,19 +51,21 @@ class Node:
         self.neighbors.append(neighbor)
    
     def step(self):
-        self.angles += self.derivative()
+        self.angle += self.derivative()
  
     def derivative(self):
         N = 0
         for n in self.neighbors:
-            N += new_packet_num(n)
+            N += self.new_packet_num(n)
+        print(N)
+        if N == 0:
+            return self.natural_frequency
         
         summation = 0
         for n, r in zip(self.neighbors, self.rendezvous):
             new_packets = self.new_packet_num(n)
             summation += self.K * new_packets * np.sin((n.angle + n.rendezvous[self]) - (self.angle + self.rendezvous[n]))
-        derivative = self.natural_frequency + (summation / N)
-
+        derivative = self.natural_frequency + (summation / N) 
         return derivative
 
     def new_packet_num(self, neighbor) -> int:
@@ -72,7 +75,7 @@ class Node:
         pygame.draw.circle(self.screen, BLUE, self.center1, self.radius1, self.circle_thickness)
 
 class Simulation:
-    def __init__(self, nodes: List[Node]): 
+    def __init__(self, nodes: list[Node]): 
         # game setup
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -82,6 +85,11 @@ class Simulation:
 
         # node setup
         self.nodes = nodes
+        for i in range(len(nodes)):
+            for j in range(len(nodes)):
+                if i == j:
+                    continue
+                self.nodes[i].add_neighbor(self.nodes[j])
 
     def step(self):
         for n in self.nodes:
@@ -107,7 +115,13 @@ if __name__ == "__main__":
     elif len(sys.argv) == 4:
         N1, N2 = int(sys.argv[1]), int(sys.argv[2])
         K = float(sys.argv[3])
-    
-    model = Communication(N1, N2, K)
+  
+    nodes = [
+        Node(center_x = 300, center_y = 300, radius = 50),
+        Node(center_x = 400, center_y = 300, radius = 50)
+    ]
+    nodes[0].packets = 10
+
+    model = Simulation(nodes)
     while True:
         model.step()
