@@ -48,7 +48,10 @@ class Node:
             return
 
         self.neighbors.append(neighbor)
-    
+   
+    def step(self):
+        self.angles += self.derivative()
+ 
     def derivative(self):
         N = 0
         for n in self.neighbors:
@@ -65,8 +68,11 @@ class Node:
     def new_packet_num(self, neighbor) -> int:
         return neighbor.packets - self.packets if self.packets < neighbor.packets else 0
 
+    def render(self):
+        pygame.draw.circle(self.screen, BLUE, self.center1, self.radius1, self.circle_thickness)
+
 class Simulation:
-    def __init__(self): 
+    def __init__(self, nodes: List[Node]): 
         # game setup
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -74,37 +80,27 @@ class Simulation:
         pygame.display.set_caption("Kuramoto-based Communication model simulation")
         self.timestep = pygame.time.get_ticks()
 
+        # node setup
+        self.nodes = nodes
+
     def step(self):
-        self.angles1 += self.derivative1()
-        self.angles2 += self.derivative2()
+        for n in self.nodes:
+            n.step()
         self.render()
         pygame.display.update()
         self.clock.tick(60)
-    def derivative2(self):
-        angles = np.concatenate((self.angles1 + self.rendezvous1, self.angles2 + self.rendezvous2))
-        angles_i, angles_j = np.meshgrid(angles, angles)
-        interactions = self.adj_mat * np.sin(angles_j - angles_i)
-       
-        adjust_frequencies = self.K * interactions.sum(axis=0) / (self.N1 + self.N2)
-        derivative = self.natural_frequencies2 + adjust_frequencies[self.N1:] 
-        return derivative
 
     def render(self):
         self.screen.fill(WHITE) 
-        pygame.draw.circle(self.screen, BLUE, self.center1, self.radius1, self.circle_thickness)
-        pygame.draw.circle(self.screen, BLUE, self.center2, self.radius2, self.circle_thickness)
-        for a in self.angles1:
-            x, y = self.center1[0] + np.cos(a) * self.radius1, self.center1[1] + np.sin(a) * self.radius1
-            pygame.draw.circle(self.screen, RED, (x, y), self.particle_radius)
-        for a in self.angles2:
-            x, y = self.center2[0] + np.cos(a) * self.radius2, self.center2[1] + np.sin(a) * self.radius2
-            pygame.draw.circle(self.screen, RED, (x, y), self.particle_radius)
-
+        for n in self.nodes:
+            pygame.draw.circle(self.screen, BLUE, n.center, n.radius, n.circle_thickness)
+            x, y = n.center[0] + np.cos(n.angle) * n.radius, n.center[1] + np.sin(n.angle) * n.radius
+            pygame.draw.circle(self.screen, RED, (x, y), n.particle_radius)
 
 if __name__ == "__main__":
     # a balance between the scale of natural frequencies and constant K matters. If not, the simulation does not converge
-    N1, N2 = 1, 1
-    K = 0.1
+    # def __init__(self, angle=None, natural_frequency=None, K: float = 0.1
+    #              center_x: int, center_y: int, radius: float):
     
     if len(sys.argv) == 3:
         N1, N2 = int(sys.argv[1]), int(sys.argv[2])
