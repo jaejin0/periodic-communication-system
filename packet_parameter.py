@@ -28,7 +28,7 @@ class Node:
         
         # updated with add_neighbor function 
         self.neighbors = []
-        self.rendezvous = [] # can be calculated using neighbor node's center and radius, but storing rendezvous angle reduce computation time
+        self.rendezvous = {} # Node : angle pair # can be calculated using neighbor node's center and radius, but storing rendezvous angle reduce computation time
         self.adj_mat = nx.to_numpy_array(nx.erdoes_renyi_graph(n=0, p=1)) 
 
         # configured for rendering 
@@ -42,34 +42,28 @@ class Node:
             # two rendezvous points
         if abs(center_to_center_distance - (self.radius + neighbor.radius)) <= epsilon:
             # one rendezvous points
-            self.rendezvous.append(np.arctan2(self.center[1] - neighbor.center[1], self.center[0] - neighbor.center[0])
+            self.rendezvous[neighbor] = np.arctan2(self.center[1] - neighbor.center[1], self.center[0] - neighbor.center[0])
         else:
             # no rendezvous point -> not a neighbor
             return
 
         self.neighbors.append(neighbor)
     
-    def derivative1(self):
-        self.adj_mat = nx.to_numpy_array(nx.erdos_renyi_graph(n=self.new_packet_num(), p=1))
-
-        angles = np.concatenate((self.angles1 + self.rendezvous1, self.angles2 + self.rendezvous2))
-        angles_i, angles_j = np.meshgrid(angles, angles)
-        interactions = self.adj_mat * np.sin(angles_j - angles_i)
-       
-        adjust_frequencies = self.K * interactions.sum(axis=0) / (self.N1 + self.N2)
-        derivative = self.natural_frequencies1 + adjust_frequencies[:self.N1] 
+    def derivative(self):
+        N = 0
+        for n in self.neighbors:
+            N += new_packet_num(n)
+        
+        summation = 0
+        for n, r in zip(self.neighbors, self.rendezvous):
+            new_packets = self.new_packet_num(n)
+            summation += self.K * new_packets * np.sin((n.angle + n.rendezvous[self]) - (self.angle + self.rendezvous[n]))
+        derivative = self.natural_frequency + (summation / N)
 
         return derivative
 
-    def new_packet_num(self):
-        new_packet = 0
-        for n in self.neighbors:
-            if self.packets < n.packets:
-                new_packets += (n.packets - self.packets)
-        return new_packets
-
-    def find_angles(self):
-        
+    def new_packet_num(self, neighbor) -> int:
+        return neighbor.packets - self.packets if self.packets < neighbor.packets else 0
 
 class Simulation:
     def __init__(self): 
