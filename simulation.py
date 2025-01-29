@@ -18,8 +18,8 @@ BLUE = (0, 0, 255)
 class Node:
     def __init__(self, angle=None, natural_frequency=None, K: float = 0.1,
                  center_x: int = 0, center_y: int = 0, radius: float = 30,
-                 max_derivative: float = 0.04, min_derivative: float = -0.04,
-                 source: bool = False):
+                 max_derivative: float = float('inf'), min_derivative: float = float('-inf'),
+                 source: bool = False, is_absolute_difference: bool = False):
         # initial values
         self.angle = angle if angle else np.random.normal(loc=0, scale=2*np.pi)
         self.natural_frequency = natural_frequency if natural_frequency else np.random.normal(loc=0, scale=0.03)
@@ -27,6 +27,7 @@ class Node:
         self.K = K
         self.center = (center_x, center_y)
         self.radius = radius
+        self.is_absolute_difference = is_absolute_difference
         self.packets = 0 # as packets intended to flow in one direction, counting packets work fine without storing packet ids
         
         # updated with add_neighbor function 
@@ -87,7 +88,10 @@ class Node:
         return derivative
 
     def new_packet_num(self, neighbor) -> int:
-        return neighbor.packets - self.packets if self.packets < neighbor.packets else 0
+        if self.is_absolute_difference: # both sides of packet delivery synchronize
+            return abs(neighbor.packets - self.packets)
+        else: # only the particle without packets synchronize to the other particle with new packet
+            return max(neighbor.packets - self.packets, 0)
 
     def met_neighbor(self):
         x, y = self.particle_position()
@@ -154,13 +158,15 @@ if __name__ == "__main__":
     #              center_x: int, center_y: int, radius: float):
    
     K = 0.1
+    is_absolute_difference = True
     if len(sys.argv) == 2:
         K = float(sys.argv[1]) 
-  
+
+
     nodes = [
-        Node(source = True, K = K, center_x = 300, center_y = 300, radius = 50),
-        Node(K = K, center_x = 400, center_y = 300, radius = 50),
-        Node(K = K, center_x = 500, center_y = 300, radius = 50) 
+        Node(source = True, natural_frequency = 0.02, K = K, center_x = 300, center_y = 300, radius = 50, is_absolute_difference = is_absolute_difference),
+        Node(natural_frequency = -0.01, K = K, center_x = 400, center_y = 300, radius = 50, is_absolute_difference = is_absolute_difference),
+        Node(natural_frequency = 0.02, K = K, center_x = 500, center_y = 300, radius = 50, is_absolute_difference = is_absolute_difference) 
     ]
     
     model = Simulation(nodes)
