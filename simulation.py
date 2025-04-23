@@ -158,7 +158,7 @@ if __name__ == "__main__":
     #              center_x: int, center_y: int, radius: float):
    
     K = 0.1
-    is_absolute_difference = True
+    is_absolute_difference = False
     if len(sys.argv) == 2:
         K = float(sys.argv[1]) 
 
