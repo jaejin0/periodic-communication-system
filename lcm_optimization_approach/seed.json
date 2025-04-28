@@ -1,0 +1,126 @@
+[ 
+	{
+		"id": 0,
+		"robots": [
+				{
+					"id": 1,
+					"natural_frequency": 0.0255020996,
+					"initial_angle": 1.2,
+					"center_position": [400, 193],
+					"path_radius": 80
+				},
+				{
+					"id": 2,
+					"natural_frequency": 0.0481096835,
+					"initial_angle": 0.1,
+					"center_position": [470, 290],
+					"path_radius": 40
+				},
+				{
+					"id": 3,
+					"natural_frequency": 0.0564947453,
+					"initial_angle": 0.3,
+					"center_position": [369, 378],
+					"path_radius": 94
+				},
+				{
+					"id": 4,
+					"natural_frequency": 0.0528826544,
+					"initial_angle": 2.4,
+					"center_position": [250, 425],
+					"path_radius": 35
+				},
+				{
+					"id": 5,
+					"natural_frequency": 0.0522709095,
+					"initial_angle": 1.3,
+					"center_position": [363, 512],
+					"path_radius": 40
+				},
+				{
+					"id": 6,
+					"natural_frequency": 0.0251861003,
+					"initial_angle": 3,
+					"center_position": [450, 575],
+					"path_radius": 68
+				},
+				{
+					"id": 7,
+					"natural_frequency": 0.0506366256,
+					"initial_angle": 2,
+					"center_position": [525, 450],
+					"path_radius": 78
+				},
+				{
+					"id": 8,
+					"natural_frequency": 0.0216607744,
+					"initial_angle": 1.5,
+					"center_position": [600, 300],
+					"path_radius": 90
+				},
+				{
+					"id": 9,
+					"natural_frequency": 0.0251216124,
+					"initial_angle": 1.5,
+					"center_position": [820, 137],
+					"path_radius": 90
+				},
+				{
+					"id": 10,
+					"natural_frequency": 0.0209848772,
+					"initial_angle": 1.5,
+					"center_position": [740, 232],
+					"path_radius": 35
+				},
+				{
+					"id": 11,
+					"natural_frequency": 0.0286279621,
+					"initial_angle": 1.5,
+					"center_position": [725, 300],
+					"path_radius": 35
+				},
+				{
+					"id": 12,
+					"natural_frequency": 0.0296889105,
+					"initial_angle": 1.5,
+					"center_position": [690, 393],
+					"path_radius": 40
+				},
+				{
+					"id": 13,
+					"natural_frequency": 0.0254158462,
+					"initial_angle": 1.5,
+					"center_position": [664, 499],
+					"path_radius": 70
+				},
+				{
+					"id": 14,
+					"natural_frequency": 0.0470545426,
+					"initial_angle": 1.5,
+					"center_position": [583, 612],
+					"path_radius": 70
+				},
+				{
+					"id": 15,
+					"natural_frequency": 0.0428732492,
+					"initial_angle": 1.5,
+					"center_position": [722, 625],
+					"path_radius": 69
+				},
+				{
+					"id": 16,
+					"natural_frequency": 0.050229453,
+					"initial_angle": 1.5,
+					"center_position": [782, 523],
+					"path_radius": 50
+				},
+				{
+					"id": 16,
+					"natural_frequency": 0.0275512816,
+					"initial_angle": 1.5,
+					"center_position": [780, 419],
+					"path_radius": 54
+				}
+		]
+	}
+]
