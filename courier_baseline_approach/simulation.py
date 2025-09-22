@@ -45,8 +45,9 @@ class Simulation:
         self.robots = []
         with open('seed.json') as file:
             data = json.load(file)[self.seed]
-            for r in data['robots']:
+            for i, r in enumerate(data['robots']):
                 self.robots.append(Robot(
+                        i,
                         r['natural_frequency'], 
                         r['initial_angle'],
                         r['center_position'], 
@@ -125,8 +126,16 @@ class Simulation:
                 x1, y1 = self.current_robot_positions[i]
                 x2, y2 = self.current_robot_positions[j]
                 if (x1 - x2)**2 + (y1 - y2)**2 <= (2 * ROBOT_RADIUS)**2:
-                    self.robots[i].met(copy.deepcopy(self.robots[j]))
-                    self.robots[j].met(copy.deepcopy(self.robots[i]))
+                    # met
+                    if self.method == 'coin_flip':
+                        coin = self.robots[i].met(copy.deepcopy(self.robots[j])) 
+                        self.robots[j].update_neighbor(copy.deepcopy(self.robots[i]))
+                        self.robots[j].courier = not coin
+                    
+                    else: 
+                        self.robots[i].met(copy.deepcopy(self.robots[j]))
+                        self.robots[j].met(copy.deepcopy(self.robots[i]))
+
 
                     # flash
                     self.robot_sync_state[i] = FLASH_DURATION
@@ -139,11 +148,17 @@ class Simulation:
         self.writer.writerows(current_state) 
    
 if __name__ == "__main__":
-    seed = int(sys.argv[1])
-    method = sys.argv[2]
-    human_mode = sys.argv[3].lower() == 'true'
-    store_result = sys.argv[4].lower() == 'true'
-
-    simulation = Simulation(seed, method, human_mode, store_result)
+    if len(sys.argv) == 1:
+        simulation = Simulation()
+    elif len(sys.argv) <= 3:
+        seed = int(sys.argv[1])
+        method = sys.argv[2]
+        simulation = Simulation(seed, method)
+    else:
+        seed = int(sys.argv[1])
+        method = sys.argv[2] 
+        human_mode = sys.argv[3].lower() == 'true'
+        store_result = sys.argv[4].lower() == 'true'
+        simulation = Simulation(seed, method, human_mode, store_result)
     while True:
         simulation.step()

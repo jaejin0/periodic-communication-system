@@ -1,12 +1,14 @@
 import math
+import random
 import numpy as np
 
 import time
 
 class Robot:
-    def __init__(self, natural_frequency, initial_angle, center_position, path_radius, robot_radius,
+    def __init__(self, id_number, natural_frequency, initial_angle, center_position, path_radius, robot_radius,
                  method, courier = False):
         # static states
+        self.id_number = id_number
         self.natural_frequency = natural_frequency
         self.center_position = center_position
         self.path_radius = path_radius
@@ -18,6 +20,7 @@ class Robot:
         self.angle = initial_angle
         self.control_frequency = 0
         self.robot_position = self.current_robot_position() 
+        self.neighbors = {}
 
     def step(self):
         self.angle += self.control_frequency + self.natural_frequency
@@ -28,22 +31,29 @@ class Robot:
         y = self.center_position[1] + self.path_radius * math.sin(self.angle)
         return x, y
 
-    def met(self, neighbor):
+    def update_neighbor(self, neighbor):
+        self.neighbors[neighbor.id_number] = neighbor     
         
+    def met(self, neighbor): 
+        self.update_neighbor(neighbor)
+
         match self.method:
             case 'coin_flip':
-                print('coin_flip')
+                if self.courier == neighbor.courier:
+                    # flip a coin
+                    random_number = random.randint(0, 1)
+                    self.courier = bool(random_number)
+                    return self.courier
 
             case 'myopic_heuristic':
-
-                print('coin_flip')
+                print('')
 
             case 'graph_based':
-
-                print('coin flip')
+                print('')
+            
             case 'full_courier':
-
-                print('coin flip')
+                print('')
+            
             case 'average':
                 self.control_frequency = ((self.control_frequency + self.natural_frequency + neighbor.control_frequency + neighbor.natural_frequency) / 2) - self.natural_frequency
 
