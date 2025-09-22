@@ -23,8 +23,17 @@ class Robot:
         self.neighbors = {}
 
     def step(self):
+        self.udpate_control_strategy()
         self.angle += self.control_frequency + self.natural_frequency
         self.robot_position = self.current_robot_position()
+
+    def update_controL_strategy(self):
+        if self.courier:
+            for neighbor in self.neighbors.values():
+                pass 
+        # TODO: implement courier functionality
+
+
 
     def current_robot_position(self):
         x = self.center_position[0] + self.path_radius * math.cos(self.angle)
