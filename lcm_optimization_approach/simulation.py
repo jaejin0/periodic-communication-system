@@ -23,7 +23,7 @@ ROBOT_COLOR = BLUE
 ROBOT_FLASH_COLOR = RED
 FLASH_DURATION = 20 # frames
 
-PATH_THICKNESS = 1
+PATH_THICKNESS = 2
 PATH_COLOR = BLACK
 
 class Simulation:
@@ -74,12 +74,13 @@ class Simulation:
         for i in range(self.robot_num):
             if self.robot_sync_state[i] > 0:
                 self.robot_sync_state[i] -= 1
+        
 
         # data collection
-        if self.timestep % 60 == 0:
-            self.store_data()
-
-        if self.timestep % 6000 == 0:
+        # if self.timestep % 60 == 0:
+        self.store_data()
+        
+        if self.timestep % 6000 == 10:
             self.visualize_frequency_data()
         
         # update simulation
@@ -133,8 +134,11 @@ class Simulation:
 
     def visualize_frequency_data(self):
         t = np.arange(0, len(self.frequency_history[0]), 1)
+        t = t / 60
         for i in range(self.robot_num):
-            plt.plot(t, self.frequency_history[i])
+            plt.plot(t, self.frequency_history[i], linewidth=0.8, alpha=0.7)
+        plt.xlabel('time (s)')
+        plt.ylabel('frequency (rad/s)')
         plt.show()
 
 if __name__ == "__main__": 
