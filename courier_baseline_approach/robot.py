@@ -41,19 +41,31 @@ class Robot:
             earliest_arrival_time = float('inf')
             rendezvous_angle = None
             for neighbor in self.neighbors.values():
+                # period = (2 * math.pi) / neighbor.natural_frequency
+                
                 time_to_arrive = neighbor.last_meeting_time + (2 * math.pi / neighbor.natural_frequency) 
                 # i might need a list of time to arrive, for robot to select the possible one, as it might have skipped some of them. Maybe we add until the time is bigger than current time?
 
                 if time_to_arrive < earliest_arrival_time:
                     earliest_arrival_time = time_to_arrive
                     rendezvous_angle = neighbor.rendezvous_angle
-
-            if rendezvous_angle == self.angle:
-                angle_difference = 2 * math.pi
-            else:
-                angle_difference = rendezvous_angle - self.angle
-            self.control_frequency = (angle_difference / (earliest_arrival_time - current_timestep)) - self.natural_frequency
-        
+           
+            rendezvous_angle = rendezvous_angle % (2 * math.pi)
+            current_angle = self.angle % (2 * math.pi) 
+            # if rendezvous_angle % (2 * math.pi) == self.angle % (2 * math.pi): 
+              #   angle_difference = 2 * math.pi
+            # else:
+            print(rendezvous_angle, current_angle)
+            angle_difference = max(rendezvous_angle, current_angle) - min(rendezvous_angle, current_angle) 
+            if angle_difference <= 0:
+                print("hell yeah")
+                print(angle_difference)
+                angle_difference += 2 * math.pi
+             
+            print(angle_difference)
+            self.control_frequency = (angle_difference / (earliest_arrival_time - current_timestep)) - self.natural_frequency 
+            # self.control_frequency = (2 * math.pi / (earliest_arrival_time - current_timestep)) - self.natural_frequency
+            
         else:
             self.control_frequency = 0 # baseline
 
