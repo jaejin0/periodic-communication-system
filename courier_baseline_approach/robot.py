@@ -1,12 +1,14 @@
 import math
-import random
-import numpy as np
 
-import time
+class Neighbor:
+    def __init__(self, rendezvous_angle: float, natural_frequency: float, last_meeting_time: int):
+        self.rendezvous_angle = rendezvous_angle
+        self.natural_frequency = natural_frequency
+        self.last_meeting_time = last_meeting_time
 
 class Robot:
     def __init__(self, id_number, natural_frequency, initial_angle, center_position, path_radius, robot_radius,
-                 method, courier = False):
+                 method, is_courier = False):
         # static states
         self.id_number = id_number
         self.natural_frequency = natural_frequency
@@ -16,43 +18,71 @@ class Robot:
         self.method = method
 
         # dynamic states
-        self.courier = courier
+        self.is_courier = is_courier
         self.angle = initial_angle
         self.control_frequency = 0
         self.robot_position = self.current_robot_position() 
-        self.neighbors = {}
+        self.neighbors = {} # key: id_number | value: Neighbor 
 
     def step(self):
-        self.udpate_control_strategy()
         self.angle += self.control_frequency + self.natural_frequency
         self.robot_position = self.current_robot_position()
-
-    def update_controL_strategy(self):
-        if self.courier:
-            for neighbor in self.neighbors.values():
-                pass 
-        # TODO: implement courier functionality
-
-
-
+    
     def current_robot_position(self):
         x = self.center_position[0] + self.path_radius * math.cos(self.angle)
         y = self.center_position[1] + self.path_radius * math.sin(self.angle)
         return x, y
 
-    def update_neighbor(self, neighbor):
-        self.neighbors[neighbor.id_number] = neighbor     
+    def update_control_strategy(self, current_timestep):
+        if self.method not in ['coin_flip', 'myopic_heuristic', 'graph_based']:
+            return 
+
+        if self.is_courier and bool(self.neighbors): # courier
+            earliest_arrival_time = float('inf')
+            rendezvous_angle = None
+            for neighbor in self.neighbors.values():
+                time_to_arrive = neighbor.last_meeting_time + (2 * math.pi / neighbor.natural_frequency) 
+                # i might need a list of time to arrive, for robot to select the possible one, as it might have skipped some of them. Maybe we add until the time is bigger than current time?
+
+                if time_to_arrive < earliest_arrival_time:
+                    earliest_arrival_time = time_to_arrive
+                    rendezvous_angle = neighbor.rendezvous_angle
+
+            if rendezvous_angle == self.angle:
+                angle_difference = 2 * math.pi
+            else:
+                angle_difference = rendezvous_angle - self.angle
+            self.control_frequency = (angle_difference / (earliest_arrival_time - current_timestep)) - self.natural_frequency
         
-    def met(self, neighbor): 
-        self.update_neighbor(neighbor)
+        else:
+            self.control_frequency = 0 # baseline
+
+    # update expected angle of neighbors every step
+    # store rendezvous for each neighbors
+
+    # for the neighbor arriving earlist
+    # ideal angular velocity = angle / time = (rendezvous angle - own angle) / (latest visit time * neighbor's angular velocity)
+    # control angular velocity = ideal angular velocity - natural angular velocity
+
+    def update_neighbor(self, timestep, neighbor_id_number, neighbor_natural_frequency):
+        '''
+        input: last meeting time, natural frequency, angle of rendezvous
+        
+        update neighbor's state
+        '''
+        if neighbor_id_number not in self.neighbors:
+            self.neighbors[neighbor_id_number] = Neighbor(self.angle, neighbor_natural_frequency, timestep) 
+        else:
+            self.neighbors[neighbor_id_number].last_meeting_time = timestep 
+                    
+    def met(self, timestep, neighbor_id_number, neighbor_natural_frequency, neighbor_is_courier, coin = None): 
+
+        self.update_neighbor(timestep, neighbor_id_number, neighbor_natural_frequency)
 
         match self.method:
             case 'coin_flip':
-                if self.courier == neighbor.courier:
-                    # flip a coin
-                    random_number = random.randint(0, 1)
-                    self.courier = bool(random_number)
-                    return self.courier
+                if self.is_courier == neighbor_is_courier:
+                    self.is_courier = coin
 
             case 'myopic_heuristic':
                 print('')
@@ -74,5 +104,7 @@ class Robot:
             
             case _:
                 print("SOMETHING WRONG SOMETHING WRONG SOMETHING WRONG!!!")
+
+        self.update_control_strategy(timestep)
 
 

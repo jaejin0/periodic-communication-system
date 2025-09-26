@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import copy
 import csv
+import random
 from datetime import datetime
 
 
@@ -20,12 +21,15 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
+YELLOW = (255, 255, 0)
+ORANGE = (255, 165, 0)
 
 # design
 ROBOT_RADIUS = 4
-ROBOT_COLOR = BLUE
+BASELINE_COLOR = BLUE
+COURIER_COLOR = YELLOW
 ROBOT_FLASH_COLOR = RED
-FLASH_DURATION = 20 # frames
+FLASH_DURATION = 15 # frames
 
 PATH_THICKNESS = 2
 PATH_COLOR = BLACK
@@ -105,8 +109,10 @@ class Simulation:
             x, y = r.current_robot_position()
             if self.robot_sync_state[i] > 0:
                 pygame.draw.circle(self.screen, ROBOT_FLASH_COLOR, (x, y), ROBOT_RADIUS)
+            elif r.is_courier:
+                pygame.draw.circle(self.screen, COURIER_COLOR, (x, y), ROBOT_RADIUS)
             else:
-                pygame.draw.circle(self.screen, ROBOT_COLOR, (x, y), ROBOT_RADIUS)
+                pygame.draw.circle(self.screen, BASELINE_COLOR, (x, y), ROBOT_RADIUS)
 
         pygame.display.update()
         self.clock.tick(60)
@@ -127,15 +133,13 @@ class Simulation:
                 x2, y2 = self.current_robot_positions[j]
                 if (x1 - x2)**2 + (y1 - y2)**2 <= (2 * ROBOT_RADIUS)**2:
                     # met
-                    if self.method == 'coin_flip':
-                        coin = self.robots[i].met(copy.deepcopy(self.robots[j])) 
-                        self.robots[j].update_neighbor(copy.deepcopy(self.robots[i]))
-                        self.robots[j].courier = not coin
-                    
-                    else: 
-                        self.robots[i].met(copy.deepcopy(self.robots[j]))
-                        self.robots[j].met(copy.deepcopy(self.robots[i]))
-
+                    coin = None
+                    if self.method == "coin_flip": 
+                        random_number = random.randint(0, 1)
+                        coin = bool(random_number)
+               
+                    self.robots[i].met(self.timestep, self.robots[j].id_number, self.robots[j].natural_frequency, self.robots[j].is_courier, coin)
+                    self.robots[j].met(self.timestep, self.robots[i].id_number, self.robots[i].natural_frequency, self.robots[i].is_courier, not coin)
 
                     # flash
                     self.robot_sync_state[i] = FLASH_DURATION

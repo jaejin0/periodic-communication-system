@@ -122,5 +122,57 @@
 					"path_radius": 54
 				}
 		]
+	},
+	{
+		"id": 1,
+		"robots": [
+				{
+					"id": 2,
+					"natural_frequency": 0.0481096835,
+					"initial_angle": 0.1,
+					"center_position": [470, 290],
+					"path_radius": 40
+				},
+				{
+					"id": 3,
+					"natural_frequency": 0.0564947453,
+					"initial_angle": 0.3,
+					"center_position": [369, 378],
+					"path_radius": 94
+				},	
+				{
+					"id": 7,
+					"natural_frequency": 0.0506366256,
+					"initial_angle": 2,
+					"center_position": [525, 450],
+					"path_radius": 78
+				},
+				{
+					"id": 8,
+					"natural_frequency": 0.0216607744,
+					"initial_angle": 1.5,
+					"center_position": [600, 300],
+					"path_radius": 90
+				}
+		]
+	},
+	{
+		"id": 2,
+		"robots": [
+				{
+					"id": 7,
+					"natural_frequency": 0.0506366256,
+					"initial_angle": 2,
+					"center_position": [525, 450],
+					"path_radius": 78
+				},
+				{
+					"id": 8,
+					"natural_frequency": 0.0216607744,
+					"initial_angle": 1.5,
+					"center_position": [600, 300],
+					"path_radius": 90
+				}
+		]
 	}
 ]
